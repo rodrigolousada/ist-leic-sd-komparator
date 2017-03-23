@@ -1,14 +1,12 @@
-# Projeto de Sistemas Distribuídos 2016-2017 #
+﻿# Projeto de Sistemas Distribuídos 2016-2017 #
 
-Grupo CXX
-*(preencher com identificador de grupo e depois apagar esta linha)*
+Grupo C63
 
-... ... ...
+Rodrigo Lousada 81115 rodrigo.m.lousada@gmail.com
 
-... ... ...
+João Arbues Moreira 80934 joao123moreira@gmail.com
 
-... ... ...
-*(preencher com nome, número e email de membro do grupo e depois apagar esta linha)*
+Carlos Antunes 81525 carlosanastasio@gmail.com
 
 
 -------------------------------------------------------------------------------

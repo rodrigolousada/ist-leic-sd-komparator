@@ -10,16 +10,15 @@ import org.komparator.supplier.domain.Purchase;
 import org.komparator.supplier.domain.QuantityException;
 import org.komparator.supplier.domain.Supplier;
 
-// TODO
-//@WebService(
-//		endpointInterface = "org.komparator.supplier.ws.SupplierPortType", 
-//		wsdlLocation = "...", 
-//		name = "SupplierWebService", 
-//		portName = "...Port", 
-//		targetNamespace = "...", 
-//		serviceName = "...Service"
-//)
-public class SupplierPortImpl { // implements SupplierPortType {
+@WebService(
+		endpointInterface = "org.komparator.supplier.ws.SupplierPortType", 
+		wsdlLocation = "supplier.1_0.wsdl", 
+		name = "SupplierWebService", 
+		portName = "SupplierPort", 
+		targetNamespace = "http://ws.supplier.komparator.org/", 
+		serviceName = "SupplierService"
+)
+public class SupplierPortImpl implements SupplierPortType {
 
 	// end point manager
 	private SupplierEndpointManager endpointManager;
@@ -29,7 +28,7 @@ public class SupplierPortImpl { // implements SupplierPortType {
 	}
 
 	// Main operations -------------------------------------------------------
-
+	@Override
 	public ProductView getProduct(String productId) throws BadProductId_Exception {
 		// check product id
 		if (productId == null)
@@ -49,28 +48,56 @@ public class SupplierPortImpl { // implements SupplierPortType {
 		// product not found
 		return null;
 	}
-
+	
+	@Override
 	public List<ProductView> searchProducts(String descText) throws BadText_Exception {
-		// TODO
+		if(descText == null){
+			throwBadText("Search Products: incorrect argument");
+		}
+		descText=descText.trim();
+		if(descText.length() == 0){
+			throwBadText("Search Products: incorrect argument");
+		}
 		
+		List<ProductView> foundProducts = new ArrayList<ProductView>();
 		
-		
-		
-		return null;
+		for(ProductView element : listProducts()) {
+			if (element.getDesc().contains(descText)) {
+				foundProducts.add(element);
+			}
+		}
+		return foundProducts;
 	}
-
+	
+	@Override
 	public String buyProduct(String productId, int quantity)
 			throws BadProductId_Exception, BadQuantity_Exception, InsufficientQuantity_Exception {
-		// TODO
+		if(productId == null){
+			throwBadProductId("Buy Product: incorrect arguments");
+		}
+		productId=productId.trim();
+		if(productId.length() == 0){
+			throwBadProductId("Buy Product: incorrect arguments");
+		}
+		if (quantity <= 0){
+			throwBadQuantity("Buy Product: incorrect quantity");
+		}
 		
+		Supplier supplier = Supplier.getInstance();
+		String purchaseId = null;
 		
+		try {
+			purchaseId = supplier.buyProduct(productId, quantity);
+		}
+		catch(QuantityException qe) {
+			throwInsufficientQuantity("Buy Product: insufficient quantity");
+		}
 		
-		
-		return null;
+		return purchaseId;
 	}
 
 	// Auxiliary operations --------------------------------------------------
-
+	@Override
 	public String ping(String name) {
 		if (name == null || name.trim().length() == 0)
 			name = "friend";
@@ -82,11 +109,12 @@ public class SupplierPortImpl { // implements SupplierPortType {
 		builder.append(" from ").append(wsName);
 		return builder.toString();
 	}
-
+	
+	@Override
 	public void clear() {
 		Supplier.getInstance().reset();
 	}
-
+	@Override
 	public void createProduct(ProductView productToCreate) throws BadProductId_Exception, BadProduct_Exception {
 		// check null
 		if (productToCreate == null)
@@ -115,7 +143,8 @@ public class SupplierPortImpl { // implements SupplierPortType {
 		Supplier s = Supplier.getInstance();
 		s.registerProduct(productId, productDesc, quantity, price);
 	}
-
+	
+	@Override
 	public List<ProductView> listProducts() {
 		Supplier supplier = Supplier.getInstance();
 		List<ProductView> pvs = new ArrayList<ProductView>();
@@ -126,7 +155,8 @@ public class SupplierPortImpl { // implements SupplierPortType {
 		}
 		return pvs;
 	}
-
+	
+	 @Override
 	public List<PurchaseView> listPurchases() {
 		Supplier supplier = Supplier.getInstance();
 		List<PurchaseView> pvs = new ArrayList<PurchaseView>();
@@ -148,6 +178,7 @@ public class SupplierPortImpl { // implements SupplierPortType {
 		view.setPrice(product.getPrice());
 		return view;
 	}
+	 
 
 	private PurchaseView newPurchaseView(Purchase purchase) {
 		PurchaseView view = new PurchaseView();
