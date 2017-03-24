@@ -119,7 +119,6 @@ public class BuyProductIT extends BaseIT {
 	}
 
 	// main tests
-
 	@Test
 	public void buyProductExistsTest() throws BadProductId_Exception, BadQuantity_Exception, InsufficientQuantity_Exception {
 		String purchaseId = client.buyProduct("X1", 1);
@@ -140,13 +139,13 @@ public class BuyProductIT extends BaseIT {
 		client.buyProduct("Z3", 100);
 	}
 	
-	/*@Test(expected = InsufficientQuantity_Exception.class)
+	@Test(expected = BadProductId_Exception.class)
 	public void buyProductNotExistsTest() throws BadProductId_Exception, BadQuantity_Exception, InsufficientQuantity_Exception {
 		client.buyProduct("CVS", 1);
 	}
 	
-	@Test(expected = InsufficientQuantity_Exception.class)
+	@Test(expected = BadProductId_Exception.class)
 	public void buyProductLowercaseNotExistsTest() throws BadProductId_Exception, BadQuantity_Exception, InsufficientQuantity_Exception {
 		client.buyProduct("x1", 1);
-	}*/
+	}
 }

@@ -86,6 +86,10 @@ public class SupplierPortImpl implements SupplierPortType {
 		Supplier supplier = Supplier.getInstance();
 		String purchaseId = null;
 		
+		if(supplier.getProduct(productId)==null) {
+			throwBadProductId("Buy Product: Product does not exists");
+		}
+		
 		try {
 			purchaseId = supplier.buyProduct(productId, quantity);
 		}
