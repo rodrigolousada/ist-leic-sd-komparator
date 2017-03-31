@@ -27,8 +27,6 @@ public class BuyProductIT extends BaseIT {
 		client.clear();
 
 		// fill-in test products
-		// (since getProduct is read-only the initialization below
-		// can be done once for all tests in this suite)
 		{
 			ProductView product = new ProductView();
 			product.setId("X1");
