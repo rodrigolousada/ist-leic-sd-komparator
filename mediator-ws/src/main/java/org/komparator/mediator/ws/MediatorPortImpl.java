@@ -2,11 +2,17 @@ package org.komparator.mediator.ws;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
+import org.komparator.supplier.ws.BadProductId_Exception;
+import org.komparator.supplier.ws.ProductView;
 import org.komparator.supplier.ws.cli.SupplierClient;
 import org.komparator.supplier.ws.cli.SupplierClientException;
 
@@ -31,13 +37,50 @@ public class MediatorPortImpl implements MediatorPortType {
 	public MediatorPortImpl(MediatorEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
 	}
-
+	
+	// lists for operations
+	private Set<SupplierClient> clients = new HashSet<SupplierClient>();
+	
+	public Set<SupplierClient> getClients(){
+		return clients;
+	}
+	
+	private ListCartsResponse listcarts;
 	// Main operations -------------------------------------------------------
 
 	@Override
 	public List<ItemView> getItems(String productId) throws InvalidItemId_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<ItemView> itemlist= new ArrayList<ItemView>();
+		for(SupplierClient client : clients){
+			try {
+				ProductView product = client.getProduct(productId);
+				
+				ItemView item = new ItemView();
+				ItemIdView aux_id = new ItemIdView();
+				
+				item.setDesc(product.getDesc());
+				item.setPrice(product.getPrice());
+				
+				aux_id.setProductId(product.getId());
+				aux_id.supplierId= client.getSupplierId();
+				
+				item.setItemId(aux_id);
+				itemlist.add(item);
+				
+			} catch (BadProductId_Exception e) {
+				System.out.println("No product available");
+				e.printStackTrace();
+			}	
+		}
+		
+		Collections.sort(itemlist, new Comparator<ItemView>() {
+			@Override
+			public int compare(ItemView item1, ItemView item2){
+				return item1.getPrice() - item2.getPrice();
+			}
+		});
+		
+		return itemlist;
 	}
 	
 	@Override

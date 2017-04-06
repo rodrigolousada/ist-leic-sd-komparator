@@ -60,6 +60,10 @@ public class SupplierClient implements SupplierPortType {
 	public void setWsName(String name) {
 		this.wsName = name;
 	}
+	
+	public String getSupplierId(){
+		return this.wsName;
+	}
 
 	/** constructor with provided web service URL */
 	public SupplierClient(String wsURL) throws SupplierClientException {
