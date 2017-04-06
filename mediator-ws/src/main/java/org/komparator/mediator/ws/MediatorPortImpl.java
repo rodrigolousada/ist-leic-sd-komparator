@@ -38,13 +38,6 @@ public class MediatorPortImpl implements MediatorPortType {
 		this.endpointManager = endpointManager;
 	}
 	
-	// lists for operations
-	private Set<SupplierClient> clients = new HashSet<SupplierClient>();
-	
-	public Set<SupplierClient> getClients(){
-		return clients;
-	}
-	
 	private ListCartsResponse listcarts;
 	// Main operations -------------------------------------------------------
 
@@ -56,23 +49,12 @@ public class MediatorPortImpl implements MediatorPortType {
 		productId = productId.trim();
 		if (productId.length() == 0)
 			throwInvalidItemId("Product identifier cannot be empty or whitespace!");
-
 		
+		List<SupplierClient> clients = getAllSuppliers();
 		List<ItemView> itemlist= new ArrayList<ItemView>();
 		for(SupplierClient client : clients){
 			try {
-				ProductView product = client.getProduct(productId);
-				
-				ItemView item = new ItemView();
-				ItemIdView aux_id = new ItemIdView();
-				
-				item.setDesc(product.getDesc());
-				item.setPrice(product.getPrice());
-				
-				aux_id.setProductId(product.getId());
-				aux_id.supplierId= client.getSupplierId();
-				
-				item.setItemId(aux_id);
+				ItemView item= newItemView(client.getProduct(productId), client);
 				itemlist.add(item);
 				
 			} catch (BadProductId_Exception e) {
@@ -190,7 +172,18 @@ public class MediatorPortImpl implements MediatorPortType {
 		view.setUnitPrice(purchase.getUnitPrice());
 		return view;
 	}
-     * */
+	     * */
+	private ItemView newItemView(ProductView product, SupplierClient client){
+		ItemView item = new ItemView();
+		ItemIdView aux_id = new ItemIdView();
+		item.setDesc(product.getDesc());
+		item.setPrice(product.getPrice());
+		aux_id.setProductId(product.getId());
+		aux_id.supplierId= client.getSupplierId();
+		item.setItemId(aux_id);
+		return item;
+	}
+
 
     
 	// Exception helpers -----------------------------------------------------
