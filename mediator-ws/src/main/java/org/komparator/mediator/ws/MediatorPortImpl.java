@@ -50,25 +50,29 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (productId.length() == 0)
 			throwInvalidItemId("Product identifier cannot be empty or whitespace!");
 		
-		List<SupplierClient> clients = getAllSuppliers();
 		List<ItemView> itemlist= new ArrayList<ItemView>();
-		for(SupplierClient client : clients){
-			try {
-				ItemView item= newItemView(client.getProduct(productId), client);
-				itemlist.add(item);
-				
-			} catch (BadProductId_Exception e) {
-				System.out.println("No product available");
-				e.printStackTrace();
-			}	
-		}
-		
-		Collections.sort(itemlist, new Comparator<ItemView>() {
-			@Override
-			public int compare(ItemView item1, ItemView item2){
-				return item1.getPrice() - item2.getPrice();
+		List<SupplierClient> clients = getAllSuppliers();
+		if (clients!=null){
+			System.out.println(clients.size());
+			
+			for(SupplierClient client : clients){
+				try {
+					ItemView item= newItemView(client.getProduct(productId), client);
+					itemlist.add(item);
+					
+				} catch (BadProductId_Exception e) {
+					System.out.println("No product available");
+					e.printStackTrace();
+				}	
 			}
-		});
+			
+			Collections.sort(itemlist, new Comparator<ItemView>() {
+				@Override
+				public int compare(ItemView item1, ItemView item2){
+					return item1.getPrice() - item2.getPrice();
+				}
+			});
+		}
 		
 		return itemlist;
 	}
