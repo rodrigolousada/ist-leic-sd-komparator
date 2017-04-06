@@ -57,8 +57,8 @@ public class SupplierClient implements SupplierPortType {
 		this.verbose = verbose;
 	}
 	
-	public void setWsName(String wsName) {
-		this.wsName = wsName;
+	public void setWsName(String name) {
+		this.wsName = name;
 	}
 
 	/** constructor with provided web service URL */
