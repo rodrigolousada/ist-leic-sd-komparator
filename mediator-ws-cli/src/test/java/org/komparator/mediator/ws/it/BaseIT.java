@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.komparator.mediator.ws.cli.MediatorClient;
+import org.komparator.supplier.ws.cli.SupplierClient;
 
 public class BaseIT {
 
@@ -14,6 +15,8 @@ public class BaseIT {
 
 	protected static MediatorClient mediatorClient;
 
+	protected static SupplierClient supplierClient1, supplierClient2;
+	
 	@BeforeClass
 	public static void oneTimeSetup() throws Exception {
 		testProps = new Properties();
@@ -34,8 +37,11 @@ public class BaseIT {
 
 		if ("true".equalsIgnoreCase(uddiEnabled)) {
 			mediatorClient = new MediatorClient(uddiURL, wsName);
+			supplierClient1 = new SupplierClient(uddiURL, "A63_Supplier1");
+			supplierClient2 = new SupplierClient(uddiURL, "A63_Supplier2");
 		} else {
 			mediatorClient = new MediatorClient(wsURL);
+			supplierClient1 = new SupplierClient(wsURL);
 		}
 
 	}
