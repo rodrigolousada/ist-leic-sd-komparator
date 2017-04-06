@@ -50,6 +50,14 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public List<ItemView> getItems(String productId) throws InvalidItemId_Exception {
+		// check product id
+		if (productId == null)
+			throwInvalidItemId("Product identifier cannot be null!");
+		productId = productId.trim();
+		if (productId.length() == 0)
+			throwInvalidItemId("Product identifier cannot be empty or whitespace!");
+
+		
 		List<ItemView> itemlist= new ArrayList<ItemView>();
 		for(SupplierClient client : clients){
 			try {
@@ -163,11 +171,65 @@ public class MediatorPortImpl implements MediatorPortType {
 	
 	// View helpers -----------------------------------------------------
 	
-    // TODO
+    /*
+    private ProductView newProductView(Product product) {
+		ProductView view = new ProductView();
+		view.setId(product.getId());
+		view.setDesc(product.getDescription());
+		view.setQuantity(product.getQuantity());
+		view.setPrice(product.getPrice());
+		return view;
+	}
+	 
+
+	private PurchaseView newPurchaseView(Purchase purchase) {
+		PurchaseView view = new PurchaseView();
+		view.setId(purchase.getPurchaseId());
+		view.setProductId(purchase.getProductId());
+		view.setQuantity(purchase.getQuantity());
+		view.setUnitPrice(purchase.getUnitPrice());
+		return view;
+	}
+     * */
 
     
 	// Exception helpers -----------------------------------------------------
 
-    // TODO
+
+     // Helper method to throw new InvalidItemId exception 
+	private void throwInvalidItemId(final String message) throws InvalidItemId_Exception {
+		InvalidItemId faultInfo = new InvalidItemId();
+		faultInfo.message = message;
+		throw new InvalidItemId_Exception(message, faultInfo);
+	}
+/*
+	// Helper method to throw new BadProduct exception
+	private void throwBadProduct(final String message) throws BadProduct_Exception {
+		BadProduct faultInfo = new BadProduct();
+		faultInfo.message = message;
+		throw new BadProduct_Exception(message, faultInfo);
+	}
+
+	// Helper method to throw new BadText exception
+	private void throwBadText(final String message) throws BadText_Exception {
+		BadText faultInfo = new BadText();
+		faultInfo.message = message;
+		throw new BadText_Exception(message, faultInfo);
+	}
+
+	// Helper method to throw new BadQuantity exception
+	private void throwBadQuantity(final String message) throws BadQuantity_Exception {
+		BadQuantity faultInfo = new BadQuantity();
+		faultInfo.message = message;
+		throw new BadQuantity_Exception(message, faultInfo);
+	}
+
+	// Helper method to throw new InsufficientQuantity exception
+	private void throwInsufficientQuantity(final String message) throws InsufficientQuantity_Exception {
+		InsufficientQuantity faultInfo = new InsufficientQuantity();
+		faultInfo.message = message;
+		throw new InsufficientQuantity_Exception(message, faultInfo);
+	}
+	*/
 
 }
