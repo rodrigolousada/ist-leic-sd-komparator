@@ -43,6 +43,12 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- UDDI Naming -->
+	    <dependency>
+	        <groupId>pt.ulisboa.tecnico.sdis</groupId>
+	        <artifactId>uddi-naming</artifactId>
+	        <version>1.2</version>
+	    </dependency>
     </dependencies>
 
     <build>
@@ -113,7 +119,8 @@
                     <killAfter>-1</killAfter>
                     <mainClass>${mainclass}</mainClass>
                     <arguments>
-                        <argument>${ws.url}</argument>
+                        <argument>${uddi.url}</argument>
+                        <argument>${ws.name}</argument>
                     </arguments>
                 </configuration>
             </plugin>
