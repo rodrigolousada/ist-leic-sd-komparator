@@ -37,6 +37,7 @@ public class MediatorPortImpl implements MediatorPortType {
 	}
 
 	private List<CartView> carts = new ArrayList<CartView>();
+	private List<ShoppingResultView> shoppingresults = new ArrayList<ShoppingResultView>();
 	private AtomicInteger shoppingresultIdCounter = new AtomicInteger(0);
 	// Main operations -------------------------------------------------------
 
@@ -159,16 +160,16 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (product == null){throwInvalidItemId("Supplier doesn't have the item");}
 		if (product.getQuantity() < itemQty) { throwNotEnoughItems("Supplier doesn't have enough items");}
 		
-		CartView cart = findCart(listCarts(), cartId);
+		CartView cart = findCart(carts, cartId);
 		if (cart==null){
 			CartView newcart = new CartView();
 			CartItemView newcartItem = newCartItem(product, client, itemQty);
 			newcart.getItems().add(newcartItem);
-			listCarts().add(newcart);
+			carts.add(newcart);
 			return;
 		}
 		else{
-			CartItemView cartItem = findProductinCart(cart.getItems(), itemId);
+			CartItemView cartItem = findProductinCart(cart.getItems(), itemId.getProductId());
 			if(cartItem == null){
 				CartItemView newcartItem = newCartItem(product, client, itemQty);
 				cart.getItems().add(newcartItem);
@@ -256,6 +257,8 @@ public class MediatorPortImpl implements MediatorPortType {
 			shoppingresult.setResult(Result.COMPLETE);
 		
 		shoppingresult.setId(generatePurchaseId());
+		shoppingresults.add(shoppingresult);
+		
 		return shoppingresult;
 	}
 
@@ -323,7 +326,7 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public List<ShoppingResultView> shopHistory() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	
@@ -352,17 +355,19 @@ public class MediatorPortImpl implements MediatorPortType {
 	}
 	
 	private CartView findCart(List<CartView> carts, String cartId){
-		for(CartView cart : carts){
-			if (cart.getCartId().equals(cartId)){
-				return cart;
+		if(carts!=null){
+			for(CartView cart : carts){
+				if (cart.getCartId().equals(cartId)){
+					return cart;
+				}
 			}
 		}
 		return null;
 	}
 	
-	private CartItemView findProductinCart(List<CartItemView> cartitems, ItemIdView itemId){
+	private CartItemView findProductinCart(List<CartItemView> cartitems, String productId){
 		for (CartItemView cartItem : cartitems){
-			if(cartItem.getItem().getItemId().equals(itemId)){
+			if(cartItem.getItem().getItemId().getProductId().equals(productId)){
 				return cartItem;
 			}
 		}
