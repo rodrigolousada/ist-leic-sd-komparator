@@ -217,18 +217,16 @@ public class MediatorPortImpl implements MediatorPortType {
 			System.out.println("No credit card server available");
 			e.printStackTrace();
 		}
-		boolean flag = false;
 		CartView cart = new CartView();
 		
 		synchronized(this){
 			for (CartView scart : listCarts()) {
 				if (scart.getCartId().equals(cartId)) {
 					cart= scart;
-					flag = false;
 					break;
 				}
 			}
-			if (flag){throwInvalidCartId("Cart doesn't exist");}
+			if (cart.getCartId()==null){throwInvalidCartId("Cart doesn't exist");}
 			if (cart.getItems().size()==0){throwEmptyCart("Cart is empty: no products to buy");}
 			
 			ShoppingResultView shoppingresult = new ShoppingResultView();
@@ -242,7 +240,7 @@ public class MediatorPortImpl implements MediatorPortType {
 				try {
 					client.buyProduct(item.getItem().getItemId().getProductId(), item.getQuantity());
 					shoppingresult.getPurchasedItems().add(item);
-					shoppingresult.setTotalPrice(shoppingresult.getTotalPrice()+item.getItem().getPrice());
+					shoppingresult.setTotalPrice(shoppingresult.getTotalPrice()+(item.getItem().getPrice())*item.getQuantity());
 					
 				} catch (BadProductId_Exception | BadQuantity_Exception | InsufficientQuantity_Exception e) {
 					System.out.println("Couldn't buy product: " + item.getItem().getItemId().getProductId());
