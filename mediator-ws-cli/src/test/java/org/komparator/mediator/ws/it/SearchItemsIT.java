@@ -81,34 +81,34 @@ public class SearchItemsIT extends BaseIT {
 	// bad input tests
 
 	@Test(expected = InvalidText_Exception.class)
-	public void getProductNullTest() throws InvalidText_Exception {
+	public void searchItemsProductNullTest() throws InvalidText_Exception {
 		mediatorClient.searchItems(null);
 	}
 
 	@Test(expected = InvalidText_Exception.class)
-	public void getProductEmptyTest() throws InvalidText_Exception {
+	public void searchItemsEmptyTest() throws InvalidText_Exception {
 		mediatorClient.searchItems("");
 	}
 
 	@Test(expected = InvalidText_Exception.class)
-	public void getProductWhitespaceTest() throws InvalidText_Exception {
+	public void searchItemsWhitespaceTest() throws InvalidText_Exception {
 		mediatorClient.searchItems(" ");
 	}
 
 	@Test(expected = InvalidText_Exception.class)
-	public void getProductTabTest() throws InvalidText_Exception {
+	public void searchItemsTabTest() throws InvalidText_Exception {
 		mediatorClient.searchItems("\t");
 	}
 
 	@Test(expected = InvalidText_Exception.class)
-	public void getProductNewlineTest() throws InvalidText_Exception {
+	public void searchItemsNewlineTest() throws InvalidText_Exception {
 		mediatorClient.searchItems("\n");
 	}
 
 	// main tests
 
 	@Test
-	public void getProductExistsTest() throws InvalidText_Exception {
+	public void searchItemsExistsTest() throws InvalidText_Exception {
 		List<ItemView> items = mediatorClient.searchItems("ball");
 		assertEquals(4, items.size());
 		assertEquals("X1", items.get(0).getItemId().getProductId());
@@ -126,7 +126,7 @@ public class SearchItemsIT extends BaseIT {
 	}
 
 	@Test
-	public void getProductAnotherExistsTest() throws InvalidText_Exception {
+	public void searchItemsAnotherExistsTest() throws InvalidText_Exception {
 		List<ItemView> items = mediatorClient.searchItems("Bas");
 		assertEquals(3, items.size());
 		assertEquals("X1", items.get(0).getItemId().getProductId());
@@ -142,7 +142,7 @@ public class SearchItemsIT extends BaseIT {
 	}
 
 	@Test
-	public void getProductYetAnotherExistsTest() throws InvalidText_Exception {
+	public void searchItemsYetAnotherExistsTest() throws InvalidText_Exception {
 		List<ItemView> items = mediatorClient.searchItems("Soccer ball");
 		assertEquals(1, items.size());
 		assertEquals("Z3", items.get(0).getItemId().getProductId());
@@ -151,14 +151,14 @@ public class SearchItemsIT extends BaseIT {
 	}
 
 	@Test
-	public void getProductNotExistsTest() throws InvalidText_Exception {
+	public void searchItemsNotExistsTest() throws InvalidText_Exception {
 		// when product does not exist, null should be returned
 		List<ItemView> items = mediatorClient.searchItems("CVS");
 		assertEquals(0, items.size());
 	}
 
 	@Test
-	public void getProductLowercaseNotExistsTest() throws InvalidText_Exception {
+	public void searchItemsLowercaseNotExistsTest() throws InvalidText_Exception {
 		// product identifiers are case sensitive,
 		// so "x1" is not the same as "X1"
 		List<ItemView> items = mediatorClient.searchItems("basketball");
