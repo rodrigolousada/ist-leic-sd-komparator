@@ -38,7 +38,7 @@ public class MediatorPortImpl implements MediatorPortType {
 		this.endpointManager = endpointManager;
 	}
 	
-	private ListCartsResponse listcarts;
+	private List<CartView> cartlist = new ArrayList<CartView>();
 	// Main operations -------------------------------------------------------
 
 	@Override
@@ -122,10 +122,10 @@ public class MediatorPortImpl implements MediatorPortType {
 			throwInvalidCartId("Search Items: incorrect argument");
 		}
 		if(itemId.getProductId() == null){
-			throwInvalidText("Search Items: incorrect argument");
+			throwInvalidItemId("Search Items: incorrect argument");
 		}
 		if(itemId.getSupplierId() == null){
-			throwInvalidText("Search Items: incorrect argument");
+			throwInvalidItemId("Search Items: incorrect argument");
 		}
 		
 		cartId=cartId.trim();
@@ -133,13 +133,13 @@ public class MediatorPortImpl implements MediatorPortType {
 		itemId.setSupplierId(itemId.getSupplierId().trim());
 		
 		if(cartId.length() == 0){
-			throwInvalidItemId("Search Items: incorrect argument");
+			throwInvalidCartId("Search Items: incorrect argument");
 		}
 		if(itemId.getProductId().length() == 0){
-			throwInvalidText("Search Items: incorrect argument");
+			throwInvalidItemId("Search Items: incorrect argument");
 		}
 		if(itemId.getSupplierId().length() == 0){
-			throwInvalidText("Search Items: incorrect argument");
+			throwInvalidItemId("Search Items: incorrect argument");
 		}
 		
 	
@@ -149,7 +149,25 @@ public class MediatorPortImpl implements MediatorPortType {
 			if(client.getSupplierId().equals(itemId.getSupplierId())){
 				for(ProductView product : client.listProducts()){
 					if(product.getId().equals(itemId.getProductId())){
-						if(product.getQuantity())
+						if(product.getQuantity() >= itemQty){
+							for(CartView cart : cartlist){
+								if (cart.getCartId().equals(cartId)){
+									for(CartItemView cartItem : cart.getItems()){
+										if (cartItem.getItem().getItemId().equals(itemId)){
+											cartItem.setQuantity(cartItem.getQuantity()+itemQty);
+										}
+									}
+			
+									CartItemView newcartItem = newCartItem(product, client, itemQty);
+									cart.getItems().add(newcartItem);
+								}
+							}
+							
+							CartView newcart = new CartView();
+							CartItemView newcartItem = newCartItem(product, client, itemQty);
+							newcart.getItems().add(newcartItem);
+							
+						}
 						
 					}
 				}
@@ -212,8 +230,7 @@ public class MediatorPortImpl implements MediatorPortType {
 	
 	@Override
 	public List<CartView> listCarts() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.cartlist;
 	}
 
 	@Override
@@ -221,29 +238,11 @@ public class MediatorPortImpl implements MediatorPortType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	
 	// View helpers -----------------------------------------------------
 	
-    /*
-    private ProductView newProductView(Product product) {
-		ProductView view = new ProductView();
-		view.setId(product.getId());
-		view.setDesc(product.getDescription());
-		view.setQuantity(product.getQuantity());
-		view.setPrice(product.getPrice());
-		return view;
-	}
-	 
 
-	private PurchaseView newPurchaseView(Purchase purchase) {
-		PurchaseView view = new PurchaseView();
-		view.setId(purchase.getPurchaseId());
-		view.setProductId(purchase.getProductId());
-		view.setQuantity(purchase.getQuantity());
-		view.setUnitPrice(purchase.getUnitPrice());
-		return view;
-	}
-	     * */
 	private ItemView newItemView(ProductView product, SupplierClient client){
 		ItemView item = new ItemView();
 		ItemIdView aux_id = new ItemIdView();
@@ -255,7 +254,14 @@ public class MediatorPortImpl implements MediatorPortType {
 		return item;
 	}
 
-
+	public CartItemView newCartItem (ProductView product,SupplierClient client,int itemQty){
+		CartItemView newcartItem = new CartItemView();
+		ItemView item = newItemView(product, client);
+		newcartItem.setItem(item);
+		newcartItem.setQuantity(itemQty);;
+		return newcartItem;
+	}
+	
     
 	// Exception helpers -----------------------------------------------------
 
