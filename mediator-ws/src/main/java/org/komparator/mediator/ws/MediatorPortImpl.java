@@ -31,7 +31,7 @@ public class MediatorPortImpl implements MediatorPortType {
 		this.endpointManager = endpointManager;
 	}
 
-	private List<CartView> cartlist = new ArrayList<CartView>();
+	private List<CartView> carts = new ArrayList<CartView>();
 	// Main operations -------------------------------------------------------
 
 	@Override
@@ -151,7 +151,7 @@ public class MediatorPortImpl implements MediatorPortType {
 				for (ProductView product : client.listProducts()) {
 					if (product.getId().equals(itemId.getProductId())) {
 						if (product.getQuantity() >= itemQty) {
-							for (CartView cart : cartlist) {
+							for (CartView cart : listCarts()) {
 								if (cart.getCartId().equals(cartId)) {
 									for (CartItemView cartItem : cart.getItems()) {
 										if (cartItem.getItem().getItemId().equals(itemId)) {
@@ -165,7 +165,7 @@ public class MediatorPortImpl implements MediatorPortType {
 							CartView newcart = new CartView();
 							CartItemView newcartItem = newCartItem(product, client, itemQty);
 							newcart.getItems().add(newcartItem);
-							cartlist.add(newcart);
+							listCarts().add(newcart);
 						}
 						throwNotEnoughItems("Supplier doesn't have enough items");
 					}
@@ -193,6 +193,8 @@ public class MediatorPortImpl implements MediatorPortType {
 		String wsName = "Mediator";
 
 		StringBuilder builder = new StringBuilder();
+		builder.append("Hello ").append(arg0);
+		builder.append(" from ").append(wsName);
 		List<SupplierClient> clients = getAllSuppliers();
 		if (clients != null) {
 			for (SupplierClient client : clients) {
@@ -202,7 +204,7 @@ public class MediatorPortImpl implements MediatorPortType {
 		return builder.toString();
 	}
 
-	public List<SupplierClient> getAllSuppliers() {
+	private List<SupplierClient> getAllSuppliers() {
 		List<SupplierClient> suppliers = new ArrayList<SupplierClient>();
 		UDDINaming uddinaming = endpointManager.getUddiNaming();
 		Collection<UDDIRecord> records = null;
@@ -231,8 +233,7 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public List<CartView> listCarts() {
-		// TODO Auto-generated method stub
-		return null;
+		return carts;
 	}
 
 	@Override
@@ -246,7 +247,7 @@ public class MediatorPortImpl implements MediatorPortType {
 	private ItemIdView newItemIdView(ProductView product, SupplierClient client) {
 		ItemIdView itemId = new ItemIdView();
 		itemId.setProductId(product.getId());
-		itemId.supplierId = client.getSupplierId();
+		itemId.setSupplierId(client.getSupplierId());
 		return itemId;
 	}
 
@@ -259,7 +260,7 @@ public class MediatorPortImpl implements MediatorPortType {
 		return item;
 	}
 
-	public CartItemView newCartItem(ProductView product, SupplierClient client, int itemQty) {
+	private CartItemView newCartItem(ProductView product, SupplierClient client, int itemQty) {
 		CartItemView newcartItem = new CartItemView();
 		ItemView item = newItemView(product, client);
 		newcartItem.setItem(item);
