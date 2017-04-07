@@ -118,8 +118,43 @@ public class MediatorPortImpl implements MediatorPortType {
 	@Override
 	public void addToCart(String cartId, ItemIdView itemId, int itemQty) throws InvalidCartId_Exception,
 			InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
-		// TODO Auto-generated method stub
+		if(cartId == null){
+			throwInvalidCartId("Search Items: incorrect argument");
+		}
+		if(itemId.getProductId() == null){
+			throwInvalidText("Search Items: incorrect argument");
+		}
+		if(itemId.getSupplierId() == null){
+			throwInvalidText("Search Items: incorrect argument");
+		}
 		
+		cartId=cartId.trim();
+		itemId.setProductId(itemId.getProductId().trim());
+		itemId.setSupplierId(itemId.getSupplierId().trim());
+		
+		if(cartId.length() == 0){
+			throwInvalidItemId("Search Items: incorrect argument");
+		}
+		if(itemId.getProductId().length() == 0){
+			throwInvalidText("Search Items: incorrect argument");
+		}
+		if(itemId.getSupplierId().length() == 0){
+			throwInvalidText("Search Items: incorrect argument");
+		}
+		
+	
+		if (itemQty < 1) {}//TODO exception: itemQty must be positive
+		List<SupplierClient> clients = getAllSuppliers();
+		for(SupplierClient client : clients){
+			if(client.getSupplierId().equals(itemId.getSupplierId())){
+				for(ProductView product : client.listProducts()){
+					if(product.getId().equals(itemId.getProductId())){
+						if(product.getQuantity())
+						
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
