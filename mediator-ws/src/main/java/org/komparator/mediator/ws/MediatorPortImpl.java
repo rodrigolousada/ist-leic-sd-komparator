@@ -164,6 +164,7 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (cart==null){
 			CartView newcart = new CartView();
 			CartItemView newcartItem = newCartItem(product, client, itemQty);
+			newcart.setCartId(cartId);
 			newcart.getItems().add(newcartItem);
 			carts.add(newcart);
 			return;
