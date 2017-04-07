@@ -149,39 +149,40 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (itemQty < 1) {
 			throwInvalidQuantity("ItemQuantity: incorrect argument");
 		}
-
-		List<SupplierClient> clients = getAllSuppliers();
-		
-		SupplierClient client= findSupplier(clients, itemId.getSupplierId());
-		if (client == null){throwInvalidItemId("Supplier doesn't exist");}
-		
-		ProductView product = findProduct(client, itemId.getProductId());
-		if (product == null){throwInvalidItemId("Supplier doesn't have the item");}
-		if (product.getQuantity() < itemQty) { throwNotEnoughItems("Supplier doesn't have enough items");}
-		
-		CartView cart = findCart(carts, cartId);
-		if (cart==null){
-			CartView newcart = new CartView();
-			CartItemView newcartItem = newCartItem(product, client, itemQty);
-			newcart.setCartId(cartId);
-			newcart.getItems().add(newcartItem);
-			carts.add(newcart);
-			return;
-		}
-		else{
-			CartItemView cartItem = findProductinCart(cart.getItems(), itemId.getProductId(), itemId.getSupplierId());
-			if(cartItem == null){
+		synchronized(this){
+			List<SupplierClient> clients = getAllSuppliers();
+			
+			SupplierClient client= findSupplier(clients, itemId.getSupplierId());
+			if (client == null){throwInvalidItemId("Supplier doesn't exist");}
+			
+			ProductView product = findProduct(client, itemId.getProductId());
+			if (product == null){throwInvalidItemId("Supplier doesn't have the item");}
+			if (product.getQuantity() < itemQty) { throwNotEnoughItems("Supplier doesn't have enough items");}
+			
+			CartView cart = findCart(carts, cartId);
+			if (cart==null){
+				CartView newcart = new CartView();
 				CartItemView newcartItem = newCartItem(product, client, itemQty);
-				cart.getItems().add(newcartItem);
+				newcart.setCartId(cartId);
+				newcart.getItems().add(newcartItem);
+				carts.add(newcart);
 				return;
 			}
 			else{
-				if ((cartItem.getQuantity() + itemQty) > product.getQuantity()){
-					throwNotEnoughItems("Supplier doesn't have enough items");}
-				cartItem.setQuantity(cartItem.getQuantity() + itemQty);
-				return;
+				CartItemView cartItem = findProductinCart(cart.getItems(), itemId.getProductId(), itemId.getSupplierId());
+				if(cartItem == null){
+					CartItemView newcartItem = newCartItem(product, client, itemQty);
+					cart.getItems().add(newcartItem);
+					return;
+				}
+				else{
+					if ((cartItem.getQuantity() + itemQty) > product.getQuantity()){
+						throwNotEnoughItems("Supplier doesn't have enough items");}
+					cartItem.setQuantity(cartItem.getQuantity() + itemQty);
+					return;
+				}
 			}
-		}		
+		}
 	}
 	
 	@Override
@@ -213,54 +214,56 @@ public class MediatorPortImpl implements MediatorPortType {
 			System.out.println("No such credit card available");
 			e.printStackTrace();
 		} catch (UDDINamingException e) {
-			System.out.println("No credit card servers available");
+			System.out.println("No credit card server available");
 			e.printStackTrace();
 		}
 		boolean flag = false;
 		CartView cart = new CartView();
-		for (CartView scart : listCarts()) {
-			if (scart.getCartId().equals(cartId)) {
-				cart= scart;
-				flag = false;
-				break;
-			}
-		}
-		if (flag){throwInvalidCartId("Cart doesn't exist");}
-		if (cart.getItems().size()==0){throwEmptyCart("Cart is empty: no products to buy");}
 		
-		ShoppingResultView shoppingresult = new ShoppingResultView();
-		shoppingresult.setTotalPrice(0);
-		List<SupplierClient> clients = getAllSuppliers();
-		
-		for(CartItemView item : cart.getItems()){
-			for (SupplierClient client : clients) {
-				if (item.getItem().getItemId().getSupplierId().equals(client.getSupplierId())){
-					try {
-						client.buyProduct(item.getItem().getItemId().getProductId(), item.getQuantity());
-						shoppingresult.getPurchasedItems().add(item);
-						shoppingresult.setTotalPrice(shoppingresult.getTotalPrice()+item.getItem().getPrice());
-						
-					} catch (BadProductId_Exception | BadQuantity_Exception | InsufficientQuantity_Exception e) {
-						System.out.println("Couldn't buy product: " + item.getItem().getItemId().getProductId());
-						shoppingresult.getDroppedItems().add(item);
-					}		
+		synchronized(this){
+			for (CartView scart : listCarts()) {
+				if (scart.getCartId().equals(cartId)) {
+					cart= scart;
+					flag = false;
+					break;
 				}
 			}
-		}
+			if (flag){throwInvalidCartId("Cart doesn't exist");}
+			if (cart.getItems().size()==0){throwEmptyCart("Cart is empty: no products to buy");}
+			
+			ShoppingResultView shoppingresult = new ShoppingResultView();
+			shoppingresult.setTotalPrice(0);
+			List<SupplierClient> clients = getAllSuppliers();
+			
+			for(CartItemView item : cart.getItems()){
+				SupplierClient client = findSupplier(clients, item.getItem().getItemId().getSupplierId());
+				if (client == null){continue;}
 		
-		if(shoppingresult.getDroppedItems().size()>0){
-			if(shoppingresult.getPurchasedItems().size()==0) 
-				shoppingresult.setResult(Result.EMPTY);
+				try {
+					client.buyProduct(item.getItem().getItemId().getProductId(), item.getQuantity());
+					shoppingresult.getPurchasedItems().add(item);
+					shoppingresult.setTotalPrice(shoppingresult.getTotalPrice()+item.getItem().getPrice());
+					
+				} catch (BadProductId_Exception | BadQuantity_Exception | InsufficientQuantity_Exception e) {
+					System.out.println("Couldn't buy product: " + item.getItem().getItemId().getProductId());
+					shoppingresult.getDroppedItems().add(item);
+				}		
+			}
+			
+			if(shoppingresult.getDroppedItems().size()>0){
+				if(shoppingresult.getPurchasedItems().size()==0) 
+					shoppingresult.setResult(Result.EMPTY);
+				else 
+					shoppingresult.setResult(Result.PARTIAL);	
+			}
 			else 
-				shoppingresult.setResult(Result.PARTIAL);	
+				shoppingresult.setResult(Result.COMPLETE);
+			
+			shoppingresult.setId(generatePurchaseId());
+			shoppingresults.add(shoppingresult);
+			
+			return shoppingresult;
 		}
-		else 
-			shoppingresult.setResult(Result.COMPLETE);
-		
-		shoppingresult.setId(generatePurchaseId());
-		shoppingresults.add(shoppingresult);
-		
-		return shoppingresult;
 	}
 
 	// Auxiliary operations --------------------------------------------------
