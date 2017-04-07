@@ -115,11 +115,12 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (cartId == null) {
 			throwInvalidCartId("CartId: incorrect argument");
 		}
-
+		if(itemId == null){
+			throwInvalidItemId("itemId: incorrect argument");
+		}
 		if (itemId.getProductId() == null) {
 			throwInvalidItemId("ProductId: incorrect argument");
 		}
-
 		if (itemId.getSupplierId() == null) {
 			throwInvalidItemId("SupplierId: incorrect argument");
 		}
@@ -131,11 +132,9 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (cartId.length() == 0) {
 			throwInvalidCartId("CartId: incorrect argument");
 		}
-
 		if (itemId.getProductId().length() == 0) {
 			throwInvalidItemId("ProductId: incorrect argument");
 		}
-
 		if (itemId.getSupplierId().length() == 0) {
 			throwInvalidItemId("SupplierId: incorrect argument");
 		}
