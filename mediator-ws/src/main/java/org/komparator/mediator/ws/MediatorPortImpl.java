@@ -115,26 +115,27 @@ public class MediatorPortImpl implements MediatorPortType {
 		if (cartId == null) {
 			throwInvalidCartId("CartId: incorrect argument");
 		}
-		if(itemId == null){
-			throwInvalidItemId("itemId: incorrect argument");
-		}
-		if (itemId.getProductId() == null) {
-			throwInvalidItemId("ProductId: incorrect argument");
-		}
-		if (itemId.getSupplierId() == null) {
-			throwInvalidItemId("SupplierId: incorrect argument");
-		}
-
 		cartId = cartId.trim();
-		itemId.setProductId(itemId.getProductId().trim());
-		itemId.setSupplierId(itemId.getSupplierId().trim());
-
 		if (cartId.length() == 0) {
 			throwInvalidCartId("CartId: incorrect argument");
 		}
+		
+		if(itemId == null){
+			throwInvalidItemId("itemId: incorrect argument");
+		}
+		
+		if (itemId.getProductId() == null) {
+			throwInvalidItemId("ProductId: incorrect argument");
+		}
+		itemId.setProductId(itemId.getProductId().trim());
 		if (itemId.getProductId().length() == 0) {
 			throwInvalidItemId("ProductId: incorrect argument");
 		}
+		
+		if (itemId.getSupplierId() == null) {
+			throwInvalidItemId("SupplierId: incorrect argument");
+		}
+		itemId.setSupplierId(itemId.getSupplierId().trim());
 		if (itemId.getSupplierId().length() == 0) {
 			throwInvalidItemId("SupplierId: incorrect argument");
 		}
