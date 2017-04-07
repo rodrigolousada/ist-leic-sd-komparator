@@ -233,32 +233,44 @@ public class MediatorPortImpl implements MediatorPortType {
 	}
 	
 	// Helper method to throw new InvalidText exception
-		private void throwInvalidText(final String message) throws InvalidText_Exception {
-			InvalidText faultInfo = new InvalidText();
-			faultInfo.message = message;
-			throw new InvalidText_Exception(message, faultInfo);
-		}
-/*
-	// Helper method to throw new BadProduct exception
-	private void throwBadProduct(final String message) throws BadProduct_Exception {
-		BadProduct faultInfo = new BadProduct();
+	private void throwInvalidText(final String message) throws InvalidText_Exception {
+		InvalidText faultInfo = new InvalidText();
 		faultInfo.message = message;
-		throw new BadProduct_Exception(message, faultInfo);
+		throw new InvalidText_Exception(message, faultInfo);
 	}
 
-	// Helper method to throw new BadQuantity exception
-	private void throwBadQuantity(final String message) throws BadQuantity_Exception {
-		BadQuantity faultInfo = new BadQuantity();
+	// Helper method to throw new InvalidCartId exception
+	private void throwInvalidCartId(final String message) throws InvalidCartId_Exception {
+		InvalidCartId faultInfo = new InvalidCartId();
 		faultInfo.message = message;
-		throw new BadQuantity_Exception(message, faultInfo);
+		throw new InvalidCartId_Exception(message, faultInfo);
 	}
-
-	// Helper method to throw new InsufficientQuantity exception
-	private void throwInsufficientQuantity(final String message) throws InsufficientQuantity_Exception {
-		InsufficientQuantity faultInfo = new InsufficientQuantity();
+	
+	// Helper method to throw new InvalidQuantity exception
+	private void throwInvalidQuantity(final String message) throws InvalidQuantity_Exception {
+		InvalidQuantity faultInfo = new InvalidQuantity();
 		faultInfo.message = message;
-		throw new InsufficientQuantity_Exception(message, faultInfo);
+		throw new InvalidQuantity_Exception(message, faultInfo);
 	}
-	*/
-
+		
+	// Helper method to throw new NotEnoughItems exception
+	private void throwNotEnoughItems(final String message) throws NotEnoughItems_Exception {
+		NotEnoughItems faultInfo = new NotEnoughItems();
+		faultInfo.message = message;
+		throw new NotEnoughItems_Exception(message, faultInfo);
+	}
+	
+	// Helper method to throw new EmptyCart exception
+	private void throwEmptyCart(final String message) throws EmptyCart_Exception {
+		EmptyCart faultInfo = new EmptyCart();
+		faultInfo.message = message;
+		throw new EmptyCart_Exception(message, faultInfo);
+	}
+		
+	// Helper method to throw new InvalidCreditCard exception
+	private void throwInvalidCreditCard(final String message) throws InvalidCreditCard_Exception {
+		InvalidCreditCard faultInfo = new InvalidCreditCard();
+		faultInfo.message = message;
+		throw new InvalidCreditCard_Exception(message, faultInfo);
+	}
 }
