@@ -7,11 +7,14 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
 import org.komparator.supplier.ws.BadProductId_Exception;
+import org.komparator.supplier.ws.BadQuantity_Exception;
+import org.komparator.supplier.ws.InsufficientQuantity_Exception;
 import org.komparator.supplier.ws.ProductView;
 import org.komparator.supplier.ws.cli.SupplierClient;
 import org.komparator.supplier.ws.cli.SupplierClientException;
@@ -34,6 +37,7 @@ public class MediatorPortImpl implements MediatorPortType {
 	}
 
 	private List<CartView> carts = new ArrayList<CartView>();
+	private AtomicInteger shoppingresultIdCounter = new AtomicInteger(0);
 	// Main operations -------------------------------------------------------
 
 	@Override
@@ -184,20 +188,77 @@ public class MediatorPortImpl implements MediatorPortType {
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
 			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
+		if (cartId == null) {
+			throwInvalidCartId("CartId: incorrect argument");
+		}
+		cartId = cartId.trim();
+		if (cartId.length() == 0) {
+			throwInvalidCartId("CartId: incorrect argument");
+		}
+		
+		if (creditCardNr == null) {
+			throwInvalidCartId("CartId: incorrect argument");
+		}
+		creditCardNr = creditCardNr.trim();
+		if (creditCardNr.length() == 0) {
+			throwInvalidCartId("CartId: incorrect argument");
+		}
 		try {
 			UDDINaming uddinaming = endpointManager.getUddiNaming();
 			CreditCardClient creditcard= new CreditCardClient(uddinaming.lookup("CreditCard"));
 			if(!creditcard.validateNumber(creditCardNr)){
-				
+				throwInvalidCreditCard("Invalid credit card number");
 			}
-			
 		} catch (CreditCardClientException e) {
+			System.out.println("No such credit card available");
 			e.printStackTrace();
 		} catch (UDDINamingException e) {
+			System.out.println("No credit card servers available");
 			e.printStackTrace();
 		}
+		boolean flag = false;
+		CartView cart = new CartView();
+		for (CartView scart : listCarts()) {
+			if (scart.getCartId().equals(cartId)) {
+				cart= scart;
+				flag = false;
+				break;
+			}
+		}
+		if (flag){throwInvalidCartId("Cart doesn't exist");}
+		if (cart.getItems().size()==0){throwEmptyCart("Cart is empty: no products to buy");}
 		
-		return null;
+		ShoppingResultView shoppingresult = new ShoppingResultView();
+		shoppingresult.setTotalPrice(0);
+		List<SupplierClient> clients = getAllSuppliers();
+		
+		for(CartItemView item : cart.getItems()){
+			for (SupplierClient client : clients) {
+				if (item.getItem().getItemId().getSupplierId().equals(client.getSupplierId())){
+					try {
+						client.buyProduct(item.getItem().getItemId().getProductId(), item.getQuantity());
+						shoppingresult.getPurchasedItems().add(item);
+						shoppingresult.setTotalPrice(shoppingresult.getTotalPrice()+item.getItem().getPrice());
+						
+					} catch (BadProductId_Exception | BadQuantity_Exception | InsufficientQuantity_Exception e) {
+						System.out.println("Couldn't buy product: " + item.getItem().getItemId().getProductId());
+						shoppingresult.getDroppedItems().add(item);
+					}		
+				}
+			}
+		}
+		
+		if(shoppingresult.getDroppedItems().size()>0){
+			if(shoppingresult.getPurchasedItems().size()==0) 
+				shoppingresult.setResult(Result.EMPTY);
+			else 
+				shoppingresult.setResult(Result.PARTIAL);	
+		}
+		else 
+			shoppingresult.setResult(Result.COMPLETE);
+		
+		shoppingresult.setId(generatePurchaseId());
+		return shoppingresult;
 	}
 
 	// Auxiliary operations --------------------------------------------------
@@ -243,9 +304,18 @@ public class MediatorPortImpl implements MediatorPortType {
 		return suppliers;
 	}
 
+
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		carts.clear();
+		List<SupplierClient> suppliers = getAllSuppliers();
+		if(!suppliers.isEmpty()){
+			for(SupplierClient supplier : suppliers) {
+				supplier.clear();
+			}
+			suppliers.clear();
+		}
+		shoppingresultIdCounter.set(0);
 	}
 
 	@Override
@@ -260,6 +330,11 @@ public class MediatorPortImpl implements MediatorPortType {
 	}
 
 	// View helpers -----------------------------------------------------
+	private String generatePurchaseId() {
+		// relying on AtomicInteger to make sure assigned number is unique
+		int shoppingresultId = shoppingresultIdCounter.incrementAndGet();
+		return Integer.toString(shoppingresultId);
+	}
 
 	private ItemIdView newItemIdView(ProductView product, SupplierClient client) {
 		ItemIdView itemId = new ItemIdView();
