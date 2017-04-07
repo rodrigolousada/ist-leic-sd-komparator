@@ -149,5 +149,4 @@ public class GetItemIT extends BaseIT {
 		List<ItemView> items = mediatorClient.getItems("x1");
 		assertEquals(0, items.size());
 	}
-
 }

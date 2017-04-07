@@ -52,28 +52,27 @@ public class MediatorPortImpl implements MediatorPortType {
 		
 		List<ItemView> itemlist= new ArrayList<ItemView>();
 		List<SupplierClient> clients = getAllSuppliers();
-		if (clients!=null){
-			System.out.println(clients.size());
 			
-			for(SupplierClient client : clients){
-				try {
-					ItemView item= newItemView(client.getProduct(productId), client);
+		for(SupplierClient client : clients){
+			try {
+				ProductView product = client.getProduct(productId);
+				if(product !=null){
+					ItemView item = newItemView(product, client);
 					itemlist.add(item);
-					
-				} catch (BadProductId_Exception e) {
-					System.out.println("No product available");
-					e.printStackTrace();
-				}	
-			}
-			
-			Collections.sort(itemlist, new Comparator<ItemView>() {
-				@Override
-				public int compare(ItemView item1, ItemView item2){
-					return item1.getPrice() - item2.getPrice();
 				}
-			});
+				
+			} catch (BadProductId_Exception e) {
+				System.out.println("No product available");
+				e.printStackTrace();
+			}	
 		}
-		
+			
+		Collections.sort(itemlist, new Comparator<ItemView>() {
+			@Override
+			public int compare(ItemView item1, ItemView item2){
+				return item1.getPrice() - item2.getPrice();
+			}
+		});		
 		return itemlist;
 	}
 	
