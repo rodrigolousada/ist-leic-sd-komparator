@@ -226,6 +226,11 @@ public class BuyCartIT extends BaseIT {
 		mediatorClient.buyCart("The XX", "4024007102923926");
 	}
 	
+	@Test (expected = InvalidCreditCard_Exception.class)
+	public void buyCartCreditCardNotExistsTest() throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
+		mediatorClient.buyCart("cart", "40923926");
+	}
+	
 	@Test (expected = InvalidCartId_Exception.class)
 	public void buyCartLowercaseNotExistsExceptionTest() throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
 		// case sensitive,
