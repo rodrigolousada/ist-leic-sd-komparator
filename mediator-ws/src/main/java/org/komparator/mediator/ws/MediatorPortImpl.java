@@ -100,13 +100,6 @@ public class MediatorPortImpl implements MediatorPortType {
 		
 		Collections.sort(foundItems, new Comparator<ItemView>() {
 			@Override
-			public int compare(ItemView item1, ItemView item2){
-				return item1.getPrice() - item2.getPrice();
-			}
-		});
-		
-		Collections.sort(foundItems, new Comparator<ItemView>() {
-			@Override
 	        public int compare(ItemView item1, ItemView item2) {
 	            String id1 = item1.getItemId().getProductId();
 	            String id2 = item2.getItemId().getProductId();
