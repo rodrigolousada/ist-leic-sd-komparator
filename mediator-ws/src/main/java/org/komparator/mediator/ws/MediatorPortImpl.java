@@ -258,7 +258,7 @@ public class MediatorPortImpl implements MediatorPortType {
 				shoppingresult.setResult(Result.COMPLETE);
 			
 			shoppingresult.setId(generatePurchaseId());
-			shoppingresults.add(shoppingresult);
+			shoppingresults.add(0, shoppingresult);
 			
 			return shoppingresult;
 		}
@@ -311,6 +311,8 @@ public class MediatorPortImpl implements MediatorPortType {
 	@Override
 	public void clear() {
 		carts.clear();
+		shoppingresults.clear();
+		shoppingresultIdCounter.set(0);
 		/*List<SupplierClient> suppliers = getAllSuppliers();
 		if(!suppliers.isEmpty()){
 			for(SupplierClient supplier : suppliers) {
@@ -318,7 +320,6 @@ public class MediatorPortImpl implements MediatorPortType {
 			}
 			suppliers.clear();
 		}*/
-		shoppingresultIdCounter.set(0);
 	}
 
 	@Override
@@ -328,7 +329,6 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public List<ShoppingResultView> shopHistory() {
-		Collections.reverse(shoppingresults);
 		return shoppingresults;
 	}
 	

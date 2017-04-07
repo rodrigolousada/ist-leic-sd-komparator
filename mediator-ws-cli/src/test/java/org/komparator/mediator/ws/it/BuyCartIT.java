@@ -209,6 +209,18 @@ public class BuyCartIT extends BaseIT {
 		assertEquals(shoppingresult2.getResult(), Result.EMPTY);
 	}
 	
+	@Test
+	public void buyCartCheckHistoryTest() throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception  {
+		mediatorClient.buyCart("someCart", "4024007102923926");
+		mediatorClient.buyCart("emptyCart", "4024007102923926");
+		ShoppingResultView shoppingresult3 = mediatorClient.buyCart("cart", "4024007102923926");
+		
+		List<ShoppingResultView> history = mediatorClient.shopHistory();
+		
+		assertEquals(3, history.size());
+		assertEquals(shoppingresult3.getId(), history.get(0).getId());
+	}
+	
 	@Test (expected = InvalidCartId_Exception.class)
 	public void buyCartNotExistsTest() throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
 		mediatorClient.buyCart("The XX", "4024007102923926");
