@@ -28,10 +28,22 @@ public class AddToCartIT extends BaseIT {
 
 	// one-time initialization and clean-up
 	@BeforeClass
-	public static void oneTimeSetUp() throws BadProductId_Exception, BadProduct_Exception {
+	public static void oneTimeSetUp() {
 		// clear remote service state before all tests
 		mediatorClient.clear();
+	}
 
+	@AfterClass
+	public static void oneTimeTearDown() {
+		// clear remote service state after all tests
+		mediatorClient.clear();
+	}
+
+	// members
+
+	// initialization and clean-up for each test
+	@Before
+	public void setUp() throws BadProductId_Exception, BadProduct_Exception {
 		// fill-in test products
 		// (since getProduct is read-only the initialization below
 		// can be done once for all tests in this suite)
@@ -67,19 +79,6 @@ public class AddToCartIT extends BaseIT {
 			product.setQuantity(30);
 			supplierClient2.createProduct(product);
 		}
-	}
-
-	@AfterClass
-	public static void oneTimeTearDown() {
-		// clear remote service state after all tests
-		mediatorClient.clear();
-	}
-
-	// members
-
-	// initialization and clean-up for each test
-	@Before
-	public void setUp() throws BadProductId_Exception {
 		this.itemId = new ItemIdView();
 		this.itemId.setProductId(supplierClient1.getProduct("Y2").getId());
 		this.itemId.setSupplierId(supplierClient1.getSupplierId());
@@ -87,7 +86,7 @@ public class AddToCartIT extends BaseIT {
 
 	@After
 	public void tearDown() {
-		this.itemId = null;
+		mediatorClient.clear();
 	}
 
 	// bad input tests
@@ -149,16 +148,16 @@ public class AddToCartIT extends BaseIT {
 		mediatorClient.addToCart("cart", itemId, 20);
 		mediatorClient.addToCart("cart", itemId, 1);
 	}
-	
+	*/
 	@Test (expected = NotEnoughItems_Exception.class)
 	public void addToCartNotEnoughItemsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
 		mediatorClient.addToCart("cart", itemId, 21);
-	}*/
+	}
 
 	@Test (expected = NotEnoughItems_Exception.class)
 	public void addToCartAnotherNotEnoughItemsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
-		mediatorClient.addToCart("cart", itemId, 20);
-		mediatorClient.addToCart("cart", itemId, 1);
+		mediatorClient.addToCart("cart", itemId, 19);
+		mediatorClient.addToCart("cart", itemId, 2);
 	}
 
 	@Test (expected = InvalidItemId_Exception.class)
