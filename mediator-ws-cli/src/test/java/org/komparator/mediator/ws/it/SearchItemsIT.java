@@ -111,15 +111,15 @@ public class SearchItemsIT extends BaseIT {
 	public void getProductExistsTest() throws InvalidText_Exception {
 		List<ItemView> items = mediatorClient.searchItems("ball");
 		assertEquals(4, items.size());
-		assertEquals("Y2", items.get(0).getItemId().getProductId());
-		assertEquals(20, items.get(0).getPrice());
-		assertEquals("Baseball", items.get(0).getDesc());
+		assertEquals("X1", items.get(0).getItemId().getProductId());
+		assertEquals(10, items.get(0).getPrice());
+		assertEquals("Basketball", items.get(0).getDesc());
 		assertEquals("X1", items.get(1).getItemId().getProductId());
-		assertEquals(10, items.get(1).getPrice());
+		assertEquals(15, items.get(1).getPrice());
 		assertEquals("Basketball", items.get(1).getDesc());
-		assertEquals("X1", items.get(2).getItemId().getProductId());
-		assertEquals(15, items.get(2).getPrice());
-		assertEquals("Basketball", items.get(2).getDesc());
+		assertEquals("Y2", items.get(2).getItemId().getProductId());
+		assertEquals(20, items.get(2).getPrice());
+		assertEquals("Baseball", items.get(2).getDesc());
 		assertEquals("Z3", items.get(3).getItemId().getProductId());
 		assertEquals(30, items.get(3).getPrice());
 		assertEquals("Soccer ball", items.get(3).getDesc());
@@ -127,14 +127,17 @@ public class SearchItemsIT extends BaseIT {
 
 	@Test
 	public void getProductAnotherExistsTest() throws InvalidText_Exception {
-		List<ItemView> items = mediatorClient.searchItems("Basketball");
-		assertEquals(2, items.size());
+		List<ItemView> items = mediatorClient.searchItems("Bas");
+		assertEquals(3, items.size());
 		assertEquals("X1", items.get(0).getItemId().getProductId());
 		assertEquals(10, items.get(0).getPrice());
 		assertEquals("Basketball", items.get(0).getDesc());
 		assertEquals("X1", items.get(1).getItemId().getProductId());
 		assertEquals(15, items.get(1).getPrice());
 		assertEquals("Basketball", items.get(1).getDesc());
+		assertEquals("Y2", items.get(2).getItemId().getProductId());
+		assertEquals(20, items.get(2).getPrice());
+		assertEquals("Baseball", items.get(2).getDesc());
 
 	}
 
