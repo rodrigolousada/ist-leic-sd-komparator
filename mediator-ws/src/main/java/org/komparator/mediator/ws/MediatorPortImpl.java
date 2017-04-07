@@ -78,8 +78,48 @@ public class MediatorPortImpl implements MediatorPortType {
 	
 	@Override
 	public List<ItemView> searchItems(String descText) throws InvalidText_Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if(descText == null){
+			throwInvalidText("Search Items: incorrect argument");
+		}
+		descText=descText.trim();
+		if(descText.length() == 0){
+			throwInvalidText("Search Items: incorrect argument");
+		}
+		
+		List<ItemView> foundItems = new ArrayList<ItemView>();
+		List<SupplierClient> clients = getAllSuppliers();
+		
+		for(SupplierClient client : clients){
+			for(ProductView element : client.listProducts()) {
+				if (element.getDesc().contains(descText)) {
+					ItemView item = newItemView(element, client);
+					foundItems.add(item);
+				}
+			}
+		}
+		
+		Collections.sort(foundItems, new Comparator<ItemView>() {
+			@Override
+			public int compare(ItemView item1, ItemView item2){
+				return item1.getPrice() - item2.getPrice();
+			}
+		});
+		
+		Collections.sort(foundItems, new Comparator<ItemView>() {
+			@Override
+	        public int compare(ItemView item1, ItemView item2) {
+	            String id1 = item1.getItemId().getProductId();
+	            String id2 = item2.getItemId().getProductId();
+	            int resultComp = id1.compareTo(id2);
+	            if (resultComp == 0) {
+	            	Integer int1 = item1.getPrice();
+	            	Integer int2 = item2.getPrice();
+	            	resultComp=int1.compareTo(int2);
+	           }
+               return resultComp;
+	    }});
+		
+		return foundItems;
 	}
 	
 	@Override
@@ -198,19 +238,19 @@ public class MediatorPortImpl implements MediatorPortType {
 		faultInfo.message = message;
 		throw new InvalidItemId_Exception(message, faultInfo);
 	}
+	
+	// Helper method to throw new InvalidText exception
+		private void throwInvalidText(final String message) throws InvalidText_Exception {
+			InvalidText faultInfo = new InvalidText();
+			faultInfo.message = message;
+			throw new InvalidText_Exception(message, faultInfo);
+		}
 /*
 	// Helper method to throw new BadProduct exception
 	private void throwBadProduct(final String message) throws BadProduct_Exception {
 		BadProduct faultInfo = new BadProduct();
 		faultInfo.message = message;
 		throw new BadProduct_Exception(message, faultInfo);
-	}
-
-	// Helper method to throw new BadText exception
-	private void throwBadText(final String message) throws BadText_Exception {
-		BadText faultInfo = new BadText();
-		faultInfo.message = message;
-		throw new BadText_Exception(message, faultInfo);
 	}
 
 	// Helper method to throw new BadQuantity exception
