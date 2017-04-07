@@ -97,7 +97,6 @@ public class MediatorPortImpl implements MediatorPortType {
 				}
 			}
 		}
-
 		Collections.sort(foundItems, new Comparator<ItemView>() {
 			@Override
 			public int compare(ItemView item1, ItemView item2) {
@@ -197,12 +196,13 @@ public class MediatorPortImpl implements MediatorPortType {
 		}
 		
 		if (creditCardNr == null) {
-			throwInvalidCartId("CartId: incorrect argument");
+			throwInvalidCreditCard("CartId: incorrect argument");
 		}
 		creditCardNr = creditCardNr.trim();
 		if (creditCardNr.length() == 0) {
-			throwInvalidCartId("CartId: incorrect argument");
+			throwInvalidCreditCard("CartId: incorrect argument");
 		}
+	
 		try {
 			UDDINaming uddinaming = endpointManager.getUddiNaming();
 			CreditCardClient creditcard= new CreditCardClient(uddinaming.lookup("CreditCard"));
