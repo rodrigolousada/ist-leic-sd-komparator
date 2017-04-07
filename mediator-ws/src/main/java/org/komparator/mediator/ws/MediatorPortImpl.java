@@ -152,29 +152,27 @@ public class MediatorPortImpl implements MediatorPortType {
 			if (client.getSupplierId().equals(itemId.getSupplierId())){
 				for (ProductView product : client.listProducts()) {
 					if (product.getId().equals(itemId.getProductId())) {
-						if (product.getQuantity() >= itemQty) {
-							for (CartView cart : listCarts()) {
-								if (cart.getCartId().equals(cartId)) {
-									for (CartItemView cartItem : cart.getItems()) {
-										if (cartItem.getItem().getItemId().equals(itemId)) {
-											cartItem.setQuantity(cartItem.getQuantity() + itemQty);
-											return;
-										}
+						if (product.getQuantity() < itemQty) { throwNotEnoughItems("Supplier doesn't have enough items");}
+						for (CartView cart : listCarts()) {
+							if (cart.getCartId().equals(cartId)) {
+								for (CartItemView cartItem : cart.getItems()) {
+									if (cartItem.getItem().getItemId().equals(itemId)) {
+										if ((cartItem.getQuantity() + itemQty) > product.getQuantity()){
+											throwNotEnoughItems("Supplier doesn't have enough items");}
+										cartItem.setQuantity(cartItem.getQuantity() + itemQty);
+										return;
 									}
-									CartItemView newcartItem = newCartItem(product, client, itemQty);
-									cart.getItems().add(newcartItem);
-									return;
 								}
+								CartItemView newcartItem = newCartItem(product, client, itemQty);
+								cart.getItems().add(newcartItem);
+								return;
 							}
-							CartView newcart = new CartView();
-							CartItemView newcartItem = newCartItem(product, client, itemQty);
-							newcart.getItems().add(newcartItem);
-							listCarts().add(newcart);
-							return;
 						}
-						else{
-							throwNotEnoughItems("Supplier doesn't have enough items");
-						}
+						CartView newcart = new CartView();
+						CartItemView newcartItem = newCartItem(product, client, itemQty);
+						newcart.getItems().add(newcartItem);
+						listCarts().add(newcart);
+						return;
 					}
 				}
 				throwInvalidItemId("Supplier doesn't have the item");
@@ -186,14 +184,16 @@ public class MediatorPortImpl implements MediatorPortType {
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
 			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
-		UDDINaming uddinaming = endpointManager.getUddiNaming();
 		try {
+			UDDINaming uddinaming = endpointManager.getUddiNaming();
 			CreditCardClient creditcard= new CreditCardClient(uddinaming.lookup("CreditCard"));
+			if(!creditcard.validateNumber(creditCardNr)){
+				
+			}
+			
 		} catch (CreditCardClientException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UDDINamingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
