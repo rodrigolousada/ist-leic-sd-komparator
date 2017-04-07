@@ -81,34 +81,34 @@ public class GetItemIT extends BaseIT {
 	// bad input tests
 
 	@Test(expected = InvalidItemId_Exception.class)
-	public void getProductNullTest() throws InvalidItemId_Exception {
+	public void getItemsNullTest() throws InvalidItemId_Exception {
 		mediatorClient.getItems(null);
 	}
 
 	@Test(expected = InvalidItemId_Exception.class)
-	public void getProductEmptyTest() throws InvalidItemId_Exception {
+	public void getItemsEmptyTest() throws InvalidItemId_Exception {
 		mediatorClient.getItems("");
 	}
 
 	@Test(expected = InvalidItemId_Exception.class)
-	public void getProductWhitespaceTest() throws InvalidItemId_Exception {
+	public void getItemsWhitespaceTest() throws InvalidItemId_Exception {
 		mediatorClient.getItems(" ");
 	}
 
 	@Test(expected = InvalidItemId_Exception.class)
-	public void getProductTabTest() throws InvalidItemId_Exception {
+	public void getItemsTabTest() throws InvalidItemId_Exception {
 		mediatorClient.getItems("\t");
 	}
 
 	@Test(expected = InvalidItemId_Exception.class)
-	public void getProductNewlineTest() throws InvalidItemId_Exception {
+	public void getItemsNewlineTest() throws InvalidItemId_Exception {
 		mediatorClient.getItems("\n");
 	}
 
 	// main tests
 
 	@Test
-	public void getProductExistsTest() throws InvalidItemId_Exception {
+	public void getItemsExistsTest() throws InvalidItemId_Exception {
 		List<ItemView> items = mediatorClient.getItems("X1");
 		assertEquals(2, items.size());
 		assertEquals("X1", items.get(0).getItemId().getProductId());
@@ -118,7 +118,7 @@ public class GetItemIT extends BaseIT {
 	}
 
 	@Test
-	public void getProductAnotherExistsTest() throws InvalidItemId_Exception  {
+	public void getItemsAnotherExistsTest() throws InvalidItemId_Exception  {
 		List<ItemView> items = mediatorClient.getItems("Y2");
 		assertEquals(1, items.size());
 		assertEquals("Y2", items.get(0).getItemId().getProductId());
@@ -127,7 +127,7 @@ public class GetItemIT extends BaseIT {
 	}
 
 	@Test
-	public void getProductYetAnotherExistsTest() throws InvalidItemId_Exception {
+	public void getItemsYetAnotherExistsTest() throws InvalidItemId_Exception {
 		List<ItemView> items = mediatorClient.getItems("Z3");
 		assertEquals(1, items.size());
 		assertEquals("Z3", items.get(0).getItemId().getProductId());
@@ -136,14 +136,14 @@ public class GetItemIT extends BaseIT {
 	}
 
 	@Test
-	public void getProductNotExistsTest() throws InvalidItemId_Exception {
+	public void getItemsNotExistsTest() throws InvalidItemId_Exception {
 		// when product does not exist, null should be returned
 		List<ItemView> items = mediatorClient.getItems("A0");
 		assertEquals(0, items.size());
 	}
 
 	@Test
-	public void getProductLowercaseNotExistsTest() throws InvalidItemId_Exception {
+	public void getItemsLowercaseNotExistsTest() throws InvalidItemId_Exception {
 		// product identifiers are case sensitive,
 		// so "x1" is not the same as "X1"
 		List<ItemView> items = mediatorClient.getItems("x1");
