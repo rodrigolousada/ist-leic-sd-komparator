@@ -136,19 +136,52 @@ public class AddToCartIT extends BaseIT {
 	@Test
 	public void addToCartExistsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
 		mediatorClient.addToCart("cart", itemId, 1);
+		
+		assertEquals(1, mediatorClient.listCarts().size());
+		CartView cart = mediatorClient.listCarts().get(0);
+		assertEquals(cart.getCartId(), "cart");
+		assertEquals(cart.getItems().get(0).getItem().getItemId().getProductId(), itemId.getProductId());
+		assertEquals(cart.getItems().get(0).getItem().getItemId().getSupplierId(), itemId.getSupplierId());
+		assertEquals(1, cart.getItems().get(0).getQuantity());
 	}
-/*
+	
 	@Test
-	public void addToCartAnotherExistsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
-		mediatorClient.addToCart("cart", itemId, 21);
+	public void addToCartAnotherExistsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception, BadProductId_Exception {
+		this.itemId.setProductId(supplierClient1.getProduct("X1").getId());
+		this.itemId.setSupplierId(supplierClient1.getSupplierId());
+		
+		ItemIdView itemId2 = new ItemIdView();
+		itemId2.setProductId(supplierClient2.getProduct("X1").getId());
+		itemId2.setSupplierId(supplierClient2.getSupplierId());
+		mediatorClient.addToCart("cart", itemId, 5);
+		mediatorClient.addToCart("cart", itemId2, 7);
+		
+		assertEquals(1, mediatorClient.listCarts().size());
+		CartView cart = mediatorClient.listCarts().get(0);
+		assertEquals(cart.getCartId(), "cart");
+		
+		assertEquals(2, cart.getItems().size());
+		assertEquals(cart.getItems().get(0).getItem().getItemId().getProductId(), itemId.getProductId());
+		assertEquals(cart.getItems().get(0).getItem().getItemId().getSupplierId(), itemId.getSupplierId());
+		assertEquals(5, cart.getItems().get(0).getQuantity());
+		
+		assertEquals(cart.getItems().get(1).getItem().getItemId().getProductId(), itemId2.getProductId());
+		assertEquals(cart.getItems().get(1).getItem().getItemId().getSupplierId(), itemId2.getSupplierId());
+		assertEquals(7, cart.getItems().get(1).getQuantity());
+	}
+	
+	@Test
+	public void addToCartMaxLimitTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+		mediatorClient.addToCart("cart", itemId, 20);
+		
+		assertEquals(1, mediatorClient.listCarts().size());
+		CartView cart = mediatorClient.listCarts().get(0);
+		assertEquals(cart.getCartId(), "cart");
+		assertEquals(cart.getItems().get(0).getItem().getItemId().getProductId(), itemId.getProductId());
+		assertEquals(cart.getItems().get(0).getItem().getItemId().getSupplierId(), itemId.getSupplierId());
+		assertEquals(20, cart.getItems().get(0).getQuantity());
 	}
 
-	@Test
-	public void addToCartYetAnotherExistsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
-		mediatorClient.addToCart("cart", itemId, 20);
-		mediatorClient.addToCart("cart", itemId, 1);
-	}
-	*/
 	@Test (expected = NotEnoughItems_Exception.class)
 	public void addToCartNotEnoughItemsTest() throws InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
 		mediatorClient.addToCart("cart", itemId, 21);
@@ -168,14 +201,53 @@ public class AddToCartIT extends BaseIT {
 		invalidItemId.setSupplierId(supplierClient1.getSupplierId());
 		mediatorClient.addToCart("cart", invalidItemId, 1);
 	}
+	
+	@Test
+	public void addToCartLowercaseNotExistsTest() throws BadProductId_Exception, InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+		// product identifiers are case sensitive,
+		// so "x1" is not the same as "X1"
+		mediatorClient.addToCart("cart", itemId, 5);
+		mediatorClient.addToCart("Cart", itemId, 5);
+		assertEquals(2, mediatorClient.listCarts().size());
+		CartView cart1 = mediatorClient.listCarts().get(0);
+		CartView cart2 = mediatorClient.listCarts().get(1);
+		assertEquals(cart1.getCartId(), "cart");
+		assertEquals(cart1.getItems().get(0).getItem().getItemId().getProductId(), itemId.getProductId());
+		assertEquals(cart1.getItems().get(0).getItem().getItemId().getSupplierId(), itemId.getSupplierId());
+		assertEquals(5, cart1.getItems().get(0).getQuantity());
+		assertEquals(cart2.getCartId(), "Cart");
+		assertEquals(cart2.getItems().get(0).getItem().getItemId().getProductId(), itemId.getProductId());
+		assertEquals(cart2.getItems().get(0).getItem().getItemId().getSupplierId(), itemId.getSupplierId());
+		assertEquals(5, cart2.getItems().get(0).getQuantity());
+	}
 
 	@Test (expected = InvalidItemId_Exception.class)
-	public void addToCartLowercaseNotExistsTest() throws BadProductId_Exception, InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+	public void addToCartLowercaseNotExistsExceptionTest() throws BadProductId_Exception, InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
 		// product identifiers are case sensitive,
 		// so "x1" is not the same as "X1"
 		ItemIdView invalidItemId = new ItemIdView();
 		invalidItemId.setProductId("x1");
 		invalidItemId.setSupplierId(supplierClient1.getSupplierId());
+		mediatorClient.addToCart("cart", invalidItemId, 1);
+	}
+	
+	@Test (expected = InvalidItemId_Exception.class)
+	public void addToCartNullSupplierTest() throws BadProductId_Exception, InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+		// product identifiers are case sensitive,
+		// so "x1" is not the same as "X1"
+		ItemIdView invalidItemId = new ItemIdView();
+		invalidItemId.setProductId("x1");
+		invalidItemId.setSupplierId(null);
+		mediatorClient.addToCart("cart", invalidItemId, 1);
+	}
+	
+	@Test (expected = InvalidItemId_Exception.class)
+	public void addToCartWrongSupplierTest() throws BadProductId_Exception, InvalidCartId_Exception, InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+		// product identifiers are case sensitive,
+		// so "x1" is not the same as "X1"
+		ItemIdView invalidItemId = new ItemIdView();
+		invalidItemId.setProductId("x1");
+		invalidItemId.setSupplierId("Nao Existo");
 		mediatorClient.addToCart("cart", invalidItemId, 1);
 	}
 }
