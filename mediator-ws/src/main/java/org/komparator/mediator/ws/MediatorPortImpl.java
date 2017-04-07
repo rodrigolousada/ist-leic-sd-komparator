@@ -170,7 +170,7 @@ public class MediatorPortImpl implements MediatorPortType {
 			return;
 		}
 		else{
-			CartItemView cartItem = findProductinCart(cart.getItems(), itemId.getProductId());
+			CartItemView cartItem = findProductinCart(cart.getItems(), itemId.getProductId(), itemId.getSupplierId());
 			if(cartItem == null){
 				CartItemView newcartItem = newCartItem(product, client, itemQty);
 				cart.getItems().add(newcartItem);
@@ -327,8 +327,8 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public List<ShoppingResultView> shopHistory() {
-		
-		return null;
+		Collections.reverse(shoppingresults);
+		return shoppingresults;
 	}
 	
 	private String generatePurchaseId() {
@@ -366,9 +366,10 @@ public class MediatorPortImpl implements MediatorPortType {
 		return null;
 	}
 	
-	private CartItemView findProductinCart(List<CartItemView> cartitems, String productId){
+	private CartItemView findProductinCart(List<CartItemView> cartitems, String productId, String supplierId){
 		for (CartItemView cartItem : cartitems){
-			if(cartItem.getItem().getItemId().getProductId().equals(productId)){
+			if(cartItem.getItem().getItemId().getProductId().equals(productId) &&
+					cartItem.getItem().getItemId().getSupplierId().equals(supplierId)){
 				return cartItem;
 			}
 		}
