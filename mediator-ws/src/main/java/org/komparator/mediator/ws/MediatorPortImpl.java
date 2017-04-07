@@ -62,7 +62,7 @@ public class MediatorPortImpl implements MediatorPortType {
 				}
 				
 			} catch (BadProductId_Exception e) {
-				System.out.println("No product available");
+				System.out.println("No such product available");
 				e.printStackTrace();
 			}	
 		}
@@ -119,31 +119,30 @@ public class MediatorPortImpl implements MediatorPortType {
 	public void addToCart(String cartId, ItemIdView itemId, int itemQty) throws InvalidCartId_Exception,
 			InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
 		if(cartId == null){
-			throwInvalidCartId("Search Items: incorrect argument");
-		}
+			throwInvalidCartId("CartId: incorrect argument");}
+		
 		if(itemId.getProductId() == null){
-			throwInvalidItemId("Search Items: incorrect argument");
-		}
+			throwInvalidItemId("ProductId: incorrect argument");}
+		
 		if(itemId.getSupplierId() == null){
-			throwInvalidItemId("Search Items: incorrect argument");
-		}
+			throwInvalidItemId("SupplierId: incorrect argument");}
 		
 		cartId=cartId.trim();
 		itemId.setProductId(itemId.getProductId().trim());
 		itemId.setSupplierId(itemId.getSupplierId().trim());
 		
 		if(cartId.length() == 0){
-			throwInvalidCartId("Search Items: incorrect argument");
-		}
-		if(itemId.getProductId().length() == 0){
-			throwInvalidItemId("Search Items: incorrect argument");
-		}
-		if(itemId.getSupplierId().length() == 0){
-			throwInvalidItemId("Search Items: incorrect argument");
-		}
+			throwInvalidCartId("CartId: incorrect argument");}
 		
-	
-		if (itemQty < 1) {}//TODO exception: itemQty must be positive
+		if(itemId.getProductId().length() == 0){
+			throwInvalidItemId("ProductId: incorrect argument");}
+		
+		if(itemId.getSupplierId().length() == 0){
+			throwInvalidItemId("SupplierId: incorrect argument");}
+		
+		if (itemQty < 1) {
+			throwInvalidQuantity("ItemQuantity: incorrect argument");}
+		
 		List<SupplierClient> clients = getAllSuppliers();
 		for(SupplierClient client : clients){
 			if(client.getSupplierId().equals(itemId.getSupplierId())){
@@ -157,22 +156,22 @@ public class MediatorPortImpl implements MediatorPortType {
 											cartItem.setQuantity(cartItem.getQuantity()+itemQty);
 										}
 									}
-			
 									CartItemView newcartItem = newCartItem(product, client, itemQty);
 									cart.getItems().add(newcartItem);
 								}
 							}
-							
 							CartView newcart = new CartView();
 							CartItemView newcartItem = newCartItem(product, client, itemQty);
 							newcart.getItems().add(newcartItem);
-							
+							cartlist.add(newcart);
 						}
-						
-					}
+						throwNotEnoughItems("Supplier doesn't have enough items");
+					}				
 				}
+				// FORNECEDOR NAO TEM PRODUTO, LANCAR EXCEPCAO?
 			}
 		}
+		// FORNECEDOR NAO EXISTE, LANCAR EXCEPCAO?
 	}
 	
 	@Override
@@ -242,15 +241,18 @@ public class MediatorPortImpl implements MediatorPortType {
 	
 	// View helpers -----------------------------------------------------
 	
-
+	private ItemIdView newItemIdView(ProductView product, SupplierClient client){
+		ItemIdView itemId = new ItemIdView();
+		itemId.setProductId(product.getId());
+		itemId.supplierId= client.getSupplierId();
+		return itemId;
+	}
 	private ItemView newItemView(ProductView product, SupplierClient client){
 		ItemView item = new ItemView();
-		ItemIdView aux_id = new ItemIdView();
+		ItemIdView itemId = newItemIdView(product, client);
 		item.setDesc(product.getDesc());
 		item.setPrice(product.getPrice());
-		aux_id.setProductId(product.getId());
-		aux_id.supplierId= client.getSupplierId();
-		item.setItemId(aux_id);
+		item.setItemId(itemId);
 		return item;
 	}
 
