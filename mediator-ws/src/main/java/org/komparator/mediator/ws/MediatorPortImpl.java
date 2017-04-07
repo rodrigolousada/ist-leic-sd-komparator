@@ -16,6 +16,8 @@ import org.komparator.supplier.ws.ProductView;
 import org.komparator.supplier.ws.cli.SupplierClient;
 import org.komparator.supplier.ws.cli.SupplierClientException;
 
+import pt.ulisboa.tecnico.sdis.ws.cli.CreditCardClient;
+import pt.ulisboa.tecnico.sdis.ws.cli.CreditCardClientException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
@@ -156,18 +158,23 @@ public class MediatorPortImpl implements MediatorPortType {
 									for (CartItemView cartItem : cart.getItems()) {
 										if (cartItem.getItem().getItemId().equals(itemId)) {
 											cartItem.setQuantity(cartItem.getQuantity() + itemQty);
+											return;
 										}
 									}
 									CartItemView newcartItem = newCartItem(product, client, itemQty);
 									cart.getItems().add(newcartItem);
+									return;
 								}
 							}
 							CartView newcart = new CartView();
 							CartItemView newcartItem = newCartItem(product, client, itemQty);
 							newcart.getItems().add(newcartItem);
 							listCarts().add(newcart);
+							return;
 						}
-						throwNotEnoughItems("Supplier doesn't have enough items");
+						else{
+							throwNotEnoughItems("Supplier doesn't have enough items");
+						}
 					}
 				}
 				throwInvalidItemId("Supplier doesn't have the item");
@@ -179,7 +186,17 @@ public class MediatorPortImpl implements MediatorPortType {
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
 			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
-		// TODO Auto-generated method stub
+		UDDINaming uddinaming = endpointManager.getUddiNaming();
+		try {
+			CreditCardClient creditcard= new CreditCardClient(uddinaming.lookup("CreditCard"));
+		} catch (CreditCardClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UDDINamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
 	}
 
