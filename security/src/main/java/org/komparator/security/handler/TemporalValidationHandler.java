@@ -87,7 +87,7 @@ public class TemporalValidationHandler implements SOAPHandler<SOAPMessageContext
 				
 				if(receiving_date.getTime() - sending_date.getTime() > 3000) {
 					System.out.println("Time Limit exceeded.");
-					return false;
+					throw new RuntimeException();
 				}
 				
 				// int value = Integer.parseInt(valueString);
