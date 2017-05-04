@@ -50,11 +50,18 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!-- Client -->
         <dependency>
 	        <groupId>org.komparator.A63</groupId>
 	        <artifactId>supplier-ws-cli</artifactId>
 	        <version>1.0-SNAPSHOT</version>
 	    </dependency>
+	    <!-- Handlers -->
+        <dependency>
+            <groupId>org.komparator.A63</groupId>
+            <artifactId>security</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
