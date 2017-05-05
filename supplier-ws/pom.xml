@@ -30,6 +30,7 @@
 	    <ws.url>http://${ws.host}:${ws.port}/supplier-ws/endpoint</ws.url>
 	    
 	    <ws.name>A63_Supplier${ws.i}</ws.name>
+	    <uddi.url>http://a63:xrr017DJ@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
     </properties>
 
     <dependencies>
