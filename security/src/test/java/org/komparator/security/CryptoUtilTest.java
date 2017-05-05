@@ -15,8 +15,6 @@ public class CryptoUtilTest {
 	/** Plain text bytes. */
 	private final byte[] plainBytes = plainText.getBytes();
 	
-	private static CryptoUtil cryptoutil;
-	
 	private String store_password = "1nsecure";
 	private String key_password = "ins3cur3";
 	
@@ -39,7 +37,6 @@ public class CryptoUtilTest {
     // initialization and clean-up for each test
     @Before
     public void setUp() {
-    	cryptoutil= new CryptoUtil();
     }
 
     @After
@@ -50,15 +47,15 @@ public class CryptoUtilTest {
     // tests
     @Test
     public void success() throws CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException{
-    	java.security.cert.Certificate certificate = cryptoutil.getX509CertificateFromResource("example.cer");
-    	PublicKey publickey = cryptoutil.getPublicKeyFromCertificate(certificate);
+    	java.security.cert.Certificate certificate = CryptoUtil.getX509CertificateFromResource("example.cer");
+    	PublicKey publickey = CryptoUtil.getPublicKeyFromCertificate(certificate);
     	
-		byte[] cipheredBytes = cryptoutil.asymcipher(plainBytes, publickey);
+		byte[] cipheredBytes = CryptoUtil.asymcipher(plainBytes, publickey);
 		assertNotNull(cipheredBytes);
 		
-		PrivateKey privatekey = cryptoutil.getPrivateKeyFromKeyStoreResource("example.jks", store_password.toCharArray(), "example", key_password.toCharArray());
+		PrivateKey privatekey = CryptoUtil.getPrivateKeyFromKeyStoreResource("example.jks", store_password.toCharArray(), "example", key_password.toCharArray());
 		
-    	byte[] decipheredBytes = cryptoutil.asymdecipher(cipheredBytes, privatekey);
+    	byte[] decipheredBytes = CryptoUtil.asymdecipher(cipheredBytes, privatekey);
     	assertNotNull(decipheredBytes);
     	
     	String decipheredText = new String(decipheredBytes);
@@ -69,48 +66,48 @@ public class CryptoUtilTest {
     @Test (expected=BadPaddingException.class)
     public void falseKeyTest() throws CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException{
     	
-    	java.security.cert.Certificate certificate = cryptoutil.getX509CertificateFromResource("example.cer");
-    	PublicKey publickey = cryptoutil.getPublicKeyFromCertificate(certificate);
+    	java.security.cert.Certificate certificate = CryptoUtil.getX509CertificateFromResource("example.cer");
+    	PublicKey publickey = CryptoUtil.getPublicKeyFromCertificate(certificate);
     	
-		byte[] cipheredBytes = cryptoutil.asymcipher(plainBytes, publickey);
+		byte[] cipheredBytes = CryptoUtil.asymcipher(plainBytes, publickey);
 		assertNotNull(cipheredBytes);
     	
     	KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ASYM_ALGO);
     	keyGen.initialize(ASYM_KEY_SIZE);
     	KeyPair keypair = keyGen.generateKeyPair();
     	
-    	cryptoutil.asymdecipher(cipheredBytes, keypair.getPrivate());
+    	CryptoUtil.asymdecipher(cipheredBytes, keypair.getPrivate());
     }
     
     @Test(expected=BadPaddingException.class)
     public void TemperedByte() throws CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyStoreException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException{
-    	java.security.cert.Certificate certificate = cryptoutil.getX509CertificateFromResource("example.cer");
-    	PublicKey publickey = cryptoutil.getPublicKeyFromCertificate(certificate);
+    	java.security.cert.Certificate certificate = CryptoUtil.getX509CertificateFromResource("example.cer");
+    	PublicKey publickey = CryptoUtil.getPublicKeyFromCertificate(certificate);
     	
-		byte[] cipheredBytes = cryptoutil.asymcipher(plainBytes, publickey);
+		byte[] cipheredBytes = CryptoUtil.asymcipher(plainBytes, publickey);
 		assertNotNull(cipheredBytes);
 		cipheredBytes[0]='j';
 		
-		PrivateKey privatekey = cryptoutil.getPrivateKeyFromKeyStoreResource("example.jks", store_password.toCharArray(), "example", key_password.toCharArray());
+		PrivateKey privatekey = CryptoUtil.getPrivateKeyFromKeyStoreResource("example.jks", store_password.toCharArray(), "example", key_password.toCharArray());
 		
-    	cryptoutil.asymdecipher(cipheredBytes, privatekey);
+    	CryptoUtil.asymdecipher(cipheredBytes, privatekey);
     }
     
     @Test
 	public void testSignature() throws Exception {
 
-		PrivateKey privateKey = cryptoutil.getPrivateKeyFromKeyStoreResource("example.jks",
+		PrivateKey privateKey = CryptoUtil.getPrivateKeyFromKeyStoreResource("example.jks",
 				store_password.toCharArray(), "example", key_password.toCharArray());
-		byte[] digitalSignature = cryptoutil.makeDigitalSignature(SIGNATURE_ALGO, privateKey, plainBytes);
+		byte[] digitalSignature = CryptoUtil.makeDigitalSignature(SIGNATURE_ALGO, privateKey, plainBytes);
 		assertNotNull(digitalSignature);
 
-		PublicKey publicKey = cryptoutil.getX509CertificateFromResource("example.cer").getPublicKey();
-		boolean result = cryptoutil.verifyDigitalSignature(SIGNATURE_ALGO, publicKey, plainBytes, digitalSignature);
+		PublicKey publicKey = CryptoUtil.getX509CertificateFromResource("example.cer").getPublicKey();
+		boolean result = CryptoUtil.verifyDigitalSignature(SIGNATURE_ALGO, publicKey, plainBytes, digitalSignature);
 		assertTrue(result);
 
 		plainBytes[3] = 12;
 
-		boolean resultAfterTamper = cryptoutil.verifyDigitalSignature(SIGNATURE_ALGO, publicKey, plainBytes,
+		boolean resultAfterTamper = CryptoUtil.verifyDigitalSignature(SIGNATURE_ALGO, publicKey, plainBytes,
 				digitalSignature);
 		assertFalse(resultAfterTamper);
 	}
