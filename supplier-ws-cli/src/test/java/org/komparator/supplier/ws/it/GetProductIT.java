@@ -148,4 +148,9 @@ public class GetProductIT extends BaseIT {
 		assertNull(product);
 	}
 
+	@Test (expected = RuntimeException.class)
+	public void getProductHackTest() throws BadProductId_Exception {
+		// when product does not exist, null should be returned
+		client.getProduct("X1");
+	}
 }

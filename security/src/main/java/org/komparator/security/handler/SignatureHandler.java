@@ -137,7 +137,8 @@ public class SignatureHandler implements SOAPHandler<SOAPMessageContext> {
 				
 				//
 				
-				CryptoUtil.verifyDigitalSignature("SHA256withRSA", publicKey, msgBytes, signatureBytes);
+				if(!CryptoUtil.verifyDigitalSignature("SHA256withRSA", publicKey, msgBytes, signatureBytes))
+					throw new RuntimeException();
 			}
 		} catch (Exception e) {
 			System.out.print("Caught exception in handleMessage: ");
