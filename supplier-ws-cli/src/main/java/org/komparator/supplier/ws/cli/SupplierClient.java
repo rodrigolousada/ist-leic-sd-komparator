@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
 
+import org.komparator.security.SingletonSecurity;
 import org.komparator.supplier.ws.BadProductId_Exception;
 import org.komparator.supplier.ws.BadProduct_Exception;
 import org.komparator.supplier.ws.BadQuantity_Exception;
@@ -77,6 +78,7 @@ public class SupplierClient implements SupplierPortType {
         this.wsName = wsName;
         uddiLookup();
         createStub();
+		SingletonSecurity.getInstance().setWsName("A63_Mediator");
     }
     
     /** UDDI lookup */

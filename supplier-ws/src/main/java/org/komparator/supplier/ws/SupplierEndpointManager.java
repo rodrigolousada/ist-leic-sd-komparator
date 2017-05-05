@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.xml.ws.Endpoint;
 
+import org.komparator.security.SingletonSecurity;
+
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 
@@ -58,6 +60,7 @@ public class SupplierEndpointManager {
 		this.uddiURL = uddiURL;
 		this.wsName = wsName;
 		this.wsURL = wsURL;
+		SingletonSecurity.getInstance().setWsName(wsName);
 	}
 
 	/** constructor with provided web service URL */

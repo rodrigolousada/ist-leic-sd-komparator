@@ -4,10 +4,7 @@
         	<handler-class>org.komparator.security.handler.LoggingHandler</handler-class>
         </handler>
         <handler>
-            <handler-class>org.komparator.security.handler.TemporalValidationHandler</handler-class>
-        </handler>
-        <handler>
-            <handler-class>org.komparator.security.handler.SignatureHandler</handler-class>
+            <handler-class>org.komparator.security.handler.CipherCCHandler</handler-class>
         </handler>
 		<handler>
 			<handler-class>org.komparator.security.handler.LoggingHandler</handler-class>
