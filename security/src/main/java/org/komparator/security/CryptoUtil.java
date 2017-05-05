@@ -1,29 +1,23 @@
 package org.komparator.security;
 
 import java.io.*;
-import java.util.*;
-
 import javax.crypto.Cipher;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-
-import static javax.xml.bind.DatatypeConverter.printHexBinary;
-import static javax.xml.bind.DatatypeConverter.printBase64Binary;
 
 
 public class CryptoUtil {
@@ -48,7 +42,55 @@ public class CryptoUtil {
 		return decipheredBytes;
     }
     
-    public static PrivateKey getPrivateKeyFromKeyStore(String keyAlias, char[] keyPassword, KeyStore keystore)
+    public byte[] makeDigitalSignature(final String signatureMethod, final PrivateKey privateKey,
+			final byte[] bytesToSign) {
+		try {
+			Signature sig = Signature.getInstance(signatureMethod);
+			sig.initSign(privateKey);
+			sig.update(bytesToSign);
+			byte[] signatureResult = sig.sign();
+			return signatureResult;
+		} catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+		return null;
+		}
+	}
+    
+    public boolean verifyDigitalSignature(final String signatureMethod, PublicKey publicKey,
+			byte[] bytesToVerify, byte[] signature) {
+		try {
+			Signature sig = Signature.getInstance(signatureMethod);
+			sig.initVerify(publicKey);
+			sig.update(bytesToVerify);
+			return sig.verify(signature);
+		} catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+			return false;
+		}
+	}
+ 	
+ 	public Certificate getX509CertificateFromResource(String certificateResourcePath)
+			throws IOException, CertificateException {
+		InputStream is = getResourceAsStream(certificateResourcePath);
+		return getX509CertificateFromStream(is);
+	}
+ 	
+ 	public Certificate getX509CertificateFromStream(InputStream in) throws CertificateException {
+		try {
+			CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+			Certificate cert = certFactory.generateCertificate(in);
+			return cert;
+		} finally {
+			closeStream(in);
+		}
+	}
+ 	
+ 	public PrivateKey getPrivateKeyFromKeyStoreResource(String keyStoreResourcePath, char[] keyStorePassword,
+			String keyAlias, char[] keyPassword)
+			throws FileNotFoundException, KeyStoreException, UnrecoverableKeyException {
+		KeyStore keystore = readKeystoreFromResource(keyStoreResourcePath, keyStorePassword);
+		return getPrivateKeyFromKeyStore(keyAlias, keyPassword, keystore);
+	}
+ 	
+ 	public PrivateKey getPrivateKeyFromKeyStore(String keyAlias, char[] keyPassword, KeyStore keystore)
 			throws KeyStoreException, UnrecoverableKeyException {
 		PrivateKey key;
 		try {
@@ -58,27 +100,18 @@ public class CryptoUtil {
 		}
 		return key;
 	}
-    
-    public static PrivateKey getPrivateKeyFromKeyStoreResource(String keyStoreResourcePath, char[] keyStorePassword,
-			String keyAlias, char[] keyPassword)
-			throws FileNotFoundException, KeyStoreException, UnrecoverableKeyException {
-		KeyStore keystore = readKeystoreFromResource(keyStoreResourcePath, keyStorePassword);
-		return getPrivateKeyFromKeyStore(keyAlias, keyPassword, keystore);
+ 	
+ 	public PublicKey getPublicKeyFromCertificate(Certificate certificate) {
+		return certificate.getPublicKey();
 	}
-    
-    public static PrivateKey getPrivateKeyFromKeyStoreFile(File keyStoreFile, char[] keyStorePassword, String keyAlias,
-			char[] keyPassword) throws FileNotFoundException, KeyStoreException, UnrecoverableKeyException {
-		KeyStore keystore = readKeystoreFromFile(keyStoreFile, keyStorePassword);
-		return getPrivateKeyFromKeyStore(keyAlias, keyPassword, keystore);
+ 	
+ 	public KeyStore readKeystoreFromResource(String keyStoreResourcePath, char[] keyStorePassword)
+			throws KeyStoreException {
+		InputStream is = getResourceAsStream(keyStoreResourcePath);
+		return readKeystoreFromStream(is, keyStorePassword);
 	}
-    
-    public static PrivateKey getPrivateKeyFromKeyStoreFile(String keyStoreFilePath, char[] keyStorePassword,
-			String keyAlias, char[] keyPassword)
-			throws FileNotFoundException, KeyStoreException, UnrecoverableKeyException {
-		return getPrivateKeyFromKeyStoreFile(new File(keyStoreFilePath), keyStorePassword, keyAlias, keyPassword);
-	}
-    
-    private static KeyStore readKeystoreFromStream(InputStream keyStoreInputStream, char[] keyStorePassword)
+ 	
+ 	private KeyStore readKeystoreFromStream(InputStream keyStoreInputStream, char[] keyStorePassword)
 			throws KeyStoreException {
 		KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
 		try {
@@ -90,60 +123,18 @@ public class CryptoUtil {
 		}
 		return keystore;
 	}
-    
-    public static KeyStore readKeystoreFromResource(String keyStoreResourcePath, char[] keyStorePassword)
-			throws KeyStoreException {
-		InputStream is = getResourceAsStream(keyStoreResourcePath);
-		return readKeystoreFromStream(is, keyStorePassword);
-	}
-    
-    private static KeyStore readKeystoreFromFile(File keyStoreFile, char[] keyStorePassword)
-			throws FileNotFoundException, KeyStoreException {
-		FileInputStream fis = new FileInputStream(keyStoreFile);
-		return readKeystoreFromStream(fis, keyStorePassword);
-	}
-    
-    public static KeyStore readKeystoreFromFile(String keyStoreFilePath, char[] keyStorePassword)
-			throws FileNotFoundException, KeyStoreException {
-		return readKeystoreFromFile(new File(keyStoreFilePath), keyStorePassword);
-	}
-    
-
- 	private static InputStream getResourceAsStream(String resourcePath) {
- 		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
- 		return is;
- 	}
-
-
- 	private static void closeStream(InputStream in) {
- 		try {
- 			if (in != null)
- 				in.close();
- 		} catch (IOException e) {
- 			// ignore
- 		}
- 	}
  	
- 	public static Certificate getX509CertificateFromResource(String certificateResourcePath)
-			throws IOException, CertificateException {
-		InputStream is = getResourceAsStream(certificateResourcePath);
-		return getX509CertificateFromStream(is);
+ 	private InputStream getResourceAsStream(String resourcePath) {
+		InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+		return is;
 	}
  	
- 	public static PublicKey getPublicKeyFromCertificate(Certificate certificate) {
-		return certificate.getPublicKey();
-	}
- 	
- 	public static Certificate getX509CertificateFromStream(InputStream in) throws CertificateException {
+ 	private void closeStream(InputStream in) {
 		try {
-			CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-			Certificate cert = certFactory.generateCertificate(in);
-			return cert;
-		} finally {
-			closeStream(in);
+			if (in != null)
+				in.close();
+		} catch (IOException e) {
+			// ignore
 		}
 	}
- 	  
- 	
-
 }
