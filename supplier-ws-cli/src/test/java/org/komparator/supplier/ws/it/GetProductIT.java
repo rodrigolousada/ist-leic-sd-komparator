@@ -52,6 +52,14 @@ public class GetProductIT extends BaseIT {
 			product.setQuantity(30);
 			client.createProduct(product);
 		}
+		{
+			ProductView product = new ProductView();
+			product.setId("XPTO");
+			product.setDesc("ToBeHacked");
+			product.setPrice(30);
+			product.setQuantity(30);
+			client.createProduct(product);
+		}
 	}
 
 	@AfterClass
@@ -151,6 +159,6 @@ public class GetProductIT extends BaseIT {
 	@Test (expected = RuntimeException.class)
 	public void getProductHackTest() throws BadProductId_Exception {
 		// when product does not exist, null should be returned
-		client.getProduct("X1");
+		client.getProduct("XPTO");
 	}
 }

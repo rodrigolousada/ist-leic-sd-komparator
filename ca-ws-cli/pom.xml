@@ -24,7 +24,7 @@
 		<mainclass>pt.ulisboa.tecnico.sdis.ws.cli.CAClientApp</mainclass>
 
         <ws.name>CA</ws.name>
-        <uddi.url>http://localhost:9090</uddi.url>
+        <uddi.url>http://a63:xrr017DJ@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
     </properties>
 
     <dependencies>

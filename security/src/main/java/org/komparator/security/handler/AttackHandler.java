@@ -54,7 +54,7 @@ public class AttackHandler implements SOAPHandler<SOAPMessageContext> {
 				
 				for (int i = 0; i < children.getLength(); i++) {
 					Node argument = children.item(i);
-					if (argument.getNodeName().equals("id") && argument.getNodeValue().equals("X1")) {
+					if (argument.getNodeName().equals("id") && argument.getNodeValue().equals("XPTO")) {
 						argument.setNodeValue("HACKED");
 						msg.saveChanges();
 						return true;

@@ -29,7 +29,7 @@
         <ws.url>http://localhost:8081/supplier-ws/endpoint</ws.url>
         <ws.i>1</ws.i>
         <ws.name>A63_Supplier${ws.i}</ws.name>
-        <uddi.url>http://localhost:9090</uddi.url>
+        <uddi.url>http://a63:xrr017DJ@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
     </properties>
 
     <dependencies>
