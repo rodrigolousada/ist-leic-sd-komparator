@@ -1,8 +1,14 @@
 package org.komparator.mediator.ws;
 
+import java.util.Timer;
+
 public class MediatorApp {
 
 	public static void main(String[] args) throws Exception {
+		
+		LifeProof lifeProof = null;
+		Timer timer = null;
+		
 		// Check arguments
 		if (args.length == 0 || args.length == 2) {
 			System.err.println("Argument(s) missing!");
@@ -38,12 +44,17 @@ public class MediatorApp {
 
 		try {
 			endpoint.start();
-			
-			new LifeProof(wsURL);
+
+			timer = new Timer(/*isDaemon*/ true);
+			lifeProof = new LifeProof(wsURL);
+			timer.schedule(lifeProof, /*delay*/ 5 * 1000, /*period*/ 5 * 1000);
+
 			
 			endpoint.awaitConnections();
 		} finally {
 			endpoint.stop();
+			timer.cancel();
+			lifeProof.cancel();
 		}
 
 	}
