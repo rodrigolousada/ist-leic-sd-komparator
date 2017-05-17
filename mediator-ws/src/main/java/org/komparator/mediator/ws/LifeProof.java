@@ -34,6 +34,13 @@ public class LifeProof extends TimerTask {
 			date = new Date();
 			if(mediatorEndpointManager.getLastDate()!=null && date.getTime() - mediatorEndpointManager.getLastDate().getTime() > 8000) {
 				System.out.println("Date is not fresh!");
+				try {
+					mediatorEndpointManager.publishToUDDI();
+					mediatorEndpointManager.awaitConnections();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else System.out.println("Fresh date received");
 		}
