@@ -38,6 +38,9 @@ public class MediatorApp {
 
 		try {
 			endpoint.start();
+			
+			new LifeProof(wsURL);
+			
 			endpoint.awaitConnections();
 		} finally {
 			endpoint.stop();
