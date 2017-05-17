@@ -18,6 +18,10 @@ public class MediatorEndpointManager {
 	public String getWsName() {
 		return wsName;
 	}
+	
+	public String getWsURL() {
+		return wsURL;
+	}
 
 	/** Web Service location to publish */
 	private String wsURL = null;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,6 +31,8 @@ public class MediatorPortImpl implements MediatorPortType {
 	// end point manager
 	private MediatorEndpointManager endpointManager;
 
+	private Date date;
+	
 	public MediatorPortImpl(MediatorEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
 	}
@@ -450,5 +453,13 @@ public class MediatorPortImpl implements MediatorPortType {
 		InvalidCreditCard faultInfo = new InvalidCreditCard();
 		faultInfo.message = message;
 		throw new InvalidCreditCard_Exception(message, faultInfo);
+	}
+
+	@Override
+	public void imAlive() {
+		if (endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint"){
+			date = new Date();
+			System.out.println(date.toString());
+		}
 	}
 }

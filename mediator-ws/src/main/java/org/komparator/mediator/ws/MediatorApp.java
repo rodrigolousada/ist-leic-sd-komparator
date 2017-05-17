@@ -22,6 +22,16 @@ public class MediatorApp {
 			uddiURL = args[0];
 			wsName = args[1];
 			wsURL = args[2];
+			
+			if(wsURL.equals("http://localhost:8071/mediator-ws/endpoint")){
+				System.out.println("Primary Mediator\n");
+			}
+			else if(wsURL.equals("http://localhost:8072/mediator-ws/endpoint")){
+				System.out.println("Secundary Mediator\n");
+			}
+			else
+				System.out.println("unknow mediator");
+			
 			endpoint = new MediatorEndpointManager(uddiURL, wsName, wsURL);
 			endpoint.setVerbose(true);
 		}
