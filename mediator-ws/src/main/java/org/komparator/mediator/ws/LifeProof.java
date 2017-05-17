@@ -15,20 +15,21 @@ public class LifeProof extends TimerTask {
 	
 	public LifeProof(MediatorEndpointManager mediatorEndpointManager) {
 		this.mediatorEndpointManager = mediatorEndpointManager;
-		if(mediatorEndpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint"))
+		if(mediatorEndpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint")) {
 			primary = true;
-	}
-	
-	@Override
-	public void run() {		
-		if(primary) {
 			try {
 				mediatorClient = new MediatorClient("http://localhost:8072/mediator-ws/endpoint");
 			} catch (MediatorClientException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			mediatorClient.imAlive();
+		}
+	}
+	
+	@Override
+	public void run() {		
+		if(primary) {
+			if(mediatorClient!=null) mediatorClient.imAlive();
 		}
 		else {
 			date = new Date();
@@ -36,7 +37,7 @@ public class LifeProof extends TimerTask {
 				System.out.println("Date is not fresh!");
 				try {
 					mediatorEndpointManager.publishToUDDI();
-					mediatorEndpointManager.awaitConnections();
+					primary = true;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
