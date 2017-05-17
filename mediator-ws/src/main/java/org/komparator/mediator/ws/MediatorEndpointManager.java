@@ -1,6 +1,7 @@
 package org.komparator.mediator.ws;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.xml.ws.Endpoint;
 
@@ -32,6 +33,10 @@ public class MediatorEndpointManager {
 	/** Obtain Port implementation */
 	public MediatorPortType getPort() {
         return portImpl;
+	}
+	
+	public Date getLastDate() {
+		return portImpl.getLastDate();
 	}
 
 	/** Web Service endpoint */
@@ -87,7 +92,8 @@ public class MediatorEndpointManager {
 			}
 			throw e;
 		}
-		publishToUDDI();
+		if(wsURL.equals("http://localhost:8071/mediator-ws/endpoint"))
+			publishToUDDI();
 	}
 
 	public void awaitConnections() {

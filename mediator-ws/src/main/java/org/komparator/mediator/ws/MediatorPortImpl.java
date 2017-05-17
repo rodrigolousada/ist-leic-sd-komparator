@@ -31,7 +31,7 @@ public class MediatorPortImpl implements MediatorPortType {
 	// end point manager
 	private MediatorEndpointManager endpointManager;
 
-	private Date date;
+	private Date lastDate;
 	
 	public MediatorPortImpl(MediatorEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
@@ -457,9 +457,12 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public void imAlive() {
-		if (endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint"){
-			date = new Date();
-			System.out.println(date.toString());
+		if (endpointManager.getWsURL().equals("http://localhost:8072/mediator-ws/endpoint")){
+			System.out.println("date updated");
+			lastDate = new Date();
+			System.out.println(lastDate.toString());
 		}
 	}
+	
+	public Date getLastDate() { return lastDate; }
 }

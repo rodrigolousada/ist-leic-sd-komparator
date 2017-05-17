@@ -46,9 +46,8 @@ public class MediatorApp {
 			endpoint.start();
 
 			timer = new Timer(/*isDaemon*/ true);
-			lifeProof = new LifeProof(wsURL);
+			lifeProof = new LifeProof(endpoint);
 			timer.schedule(lifeProof, /*delay*/ 5 * 1000, /*period*/ 5 * 1000);
-
 			
 			endpoint.awaitConnections();
 		} finally {
