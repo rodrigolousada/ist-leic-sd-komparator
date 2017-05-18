@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 
+import org.komparator.mediator.ws.cli.MediatorClient;
+import org.komparator.mediator.ws.cli.MediatorClientException;
 import org.komparator.supplier.ws.BadProductId_Exception;
 import org.komparator.supplier.ws.BadQuantity_Exception;
 import org.komparator.supplier.ws.InsufficientQuantity_Exception;
@@ -30,7 +32,7 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	// end point manager
 	private MediatorEndpointManager endpointManager;
-
+	MediatorClient mediatorClient;
 	private Date lastDate;
 	
 	public MediatorPortImpl(MediatorEndpointManager endpointManager) {
@@ -167,6 +169,15 @@ public class MediatorPortImpl implements MediatorPortType {
 				newcart.setCartId(cartId);
 				newcart.getItems().add(newcartItem);
 				carts.add(newcart);
+				
+				try {
+					mediatorClient = new MediatorClient("http://localhost:8072/mediator-ws/endpoint");
+				} catch (MediatorClientException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mediatorClient.updateCart(newcart);
+				
 				return;
 			}
 			else{
@@ -260,6 +271,15 @@ public class MediatorPortImpl implements MediatorPortType {
 			
 			shoppingresult.setId(generatePurchaseId());
 			shoppingresults.add(0, shoppingresult);
+			
+			try {
+				mediatorClient = new MediatorClient("http://localhost:8072/mediator-ws/endpoint");
+			} catch (MediatorClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			mediatorClient.updateShopHistory(shoppingresult);
 			
 			return shoppingresult;
 		}
