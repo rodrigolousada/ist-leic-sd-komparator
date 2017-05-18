@@ -467,15 +467,13 @@ public class MediatorPortImpl implements MediatorPortType {
 	public Date getLastDate() { return lastDate; }
 
 	@Override
-	public void updateShopHistory(ShopHistory shopHistory) {
-		// TODO Auto-generated method stub
-		
+	public void updateShopHistory(ShoppingResultView shoppingResultView) {
+		shoppingresults.add(shoppingResultView);
 	}
 
 	@Override
 	public void updateCart(CartView cartView) {
-		// TODO Auto-generated method stub
-		
+		carts.add(cartView);	
 	}
 
 }
