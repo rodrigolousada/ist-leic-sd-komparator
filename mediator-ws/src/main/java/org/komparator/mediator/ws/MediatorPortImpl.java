@@ -488,7 +488,7 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public void updateShopHistory(ShoppingResultView shoppingResultView) {
-		shoppingresults.add(shoppingResultView);
+		shoppingresults.add(0, shoppingResultView);
 	}
 
 	@Override
