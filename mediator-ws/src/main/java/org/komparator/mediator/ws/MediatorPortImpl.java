@@ -39,6 +39,9 @@ public class MediatorPortImpl implements MediatorPortType {
 		this.endpointManager = endpointManager;
 	}
 
+	public String clientId = endpointManager.getWsURL();
+	public int requestId = 0;
+	
 	private List<CartView> carts = new ArrayList<CartView>();
 	private List<ShoppingResultView> shoppingresults = new ArrayList<ShoppingResultView>();
 	private AtomicInteger shoppingresultIdCounter = new AtomicInteger(0);
@@ -185,12 +188,29 @@ public class MediatorPortImpl implements MediatorPortType {
 				if(cartItem == null){
 					CartItemView newcartItem = newCartItem(product, client, itemQty);
 					cart.getItems().add(newcartItem);
+					
+					try {
+						mediatorClient = new MediatorClient("http://localhost:8072/mediator-ws/endpoint");
+					} catch (MediatorClientException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mediatorClient.updateCart(cart);
+					
 					return;
 				}
 				else{
 					if ((cartItem.getQuantity() + itemQty) > product.getQuantity()){
 						throwNotEnoughItems("Supplier doesn't have enough items");}
 					cartItem.setQuantity(cartItem.getQuantity() + itemQty);
+					
+					try {
+						mediatorClient = new MediatorClient("http://localhost:8072/mediator-ws/endpoint");
+					} catch (MediatorClientException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mediatorClient.updateCart(cart);
 					return;
 				}
 			}
@@ -493,7 +513,16 @@ public class MediatorPortImpl implements MediatorPortType {
 
 	@Override
 	public void updateCart(CartView cartView) {
-		carts.add(cartView);	
+		CartView cart = findCart(carts, cartView.getCartId());
+		if(cart==null) {
+			carts.add(cartView);
+		}
+		else {
+			for (int i=0; i<carts.size(); i++){
+				if(carts.get(i).getCartId().equals(cart.getCartId()))
+					carts.set(i, cartView);
+			}
+		}
 	}
 
 }
