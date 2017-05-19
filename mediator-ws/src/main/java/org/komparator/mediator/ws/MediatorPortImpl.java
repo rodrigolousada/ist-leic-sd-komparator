@@ -205,7 +205,7 @@ public class MediatorPortImpl implements MediatorPortType {
 				}
 
 				String pid = "" + System.currentTimeMillis();
-				if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
+				if(endpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint")) mediatorClient.updateCart(newcart, pid);
 				
 				return;
 			}
@@ -224,7 +224,7 @@ public class MediatorPortImpl implements MediatorPortType {
 
 
 					String pid = "" + System.currentTimeMillis();
-					if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
+					if(endpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint")) mediatorClient.updateCart(cart, pid);
 					
 					return;
 				}
@@ -241,7 +241,7 @@ public class MediatorPortImpl implements MediatorPortType {
 					}
 					
 					String pid = "" + System.currentTimeMillis();
-					if(endpointManager.getWsURL() == "http://localhost:8071/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
+					if(endpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint")) mediatorClient.updateCart(cart, pid);
 					
 					return;
 				}
@@ -343,7 +343,7 @@ public class MediatorPortImpl implements MediatorPortType {
 			}
 			
 			String pid = "" + System.currentTimeMillis();
-			if(endpointManager.getWsURL() == "http://localhost:8071/mediator-ws/endpoint") mediatorClient.updateShopHistory(shoppingresult, pid);
+			if(endpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint")) mediatorClient.updateShopHistory(shoppingresult, pid);
 			
 			buyCartRequests.put(propertyValue, shoppingresult);
 			
@@ -410,6 +410,7 @@ public class MediatorPortImpl implements MediatorPortType {
 		shoppingresultIdCounter.set(0);
 		addToCartRequests.clear();
 		buyCartRequests.clear();
+		if(endpointManager.getWsURL().equals("http://localhost:8071/mediator-ws/endpoint")) mediatorClient.updateClear();
 		/*List<SupplierClient> suppliers = getAllSuppliers();
 		if(!suppliers.isEmpty()){
 			for(SupplierClient supplier : suppliers) {
@@ -580,15 +581,17 @@ public class MediatorPortImpl implements MediatorPortType {
 			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
 			return;
 		}
-		System.out.println("\n\n\n\n\n\nUPDATING CART\n\n\n\n\n\n");
-		CartView cart = findCart(carts, cartView.getCartId());
-		if(cart==null) {
-			carts.add(cartView);
-		}
-		else {
-			for (int i=0; i<carts.size(); i++){
-				if(carts.get(i).getCartId().equals(cart.getCartId()))
-					carts.set(i, cartView);
+		if(cartView!=null) {
+			System.out.println("\n\n\n\n\n\nUPDATING CART\n\n\n\n\n\n");
+			CartView cart = findCart(carts, cartView.getCartId());
+			if(cart==null) {
+				carts.add(cartView);
+			}
+			else {
+				for (int i=0; i<carts.size(); i++){
+					if(carts.get(i).getCartId().equals(cart.getCartId()))
+						carts.set(i, cartView);
+				}
 			}
 		}
 	}
