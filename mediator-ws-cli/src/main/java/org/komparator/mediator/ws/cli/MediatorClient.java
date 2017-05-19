@@ -144,10 +144,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 clear();
             }
         }
@@ -164,10 +164,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 return ping(arg0);
             }
         }
@@ -185,10 +185,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 return searchItems(descText);
             }
         }
@@ -206,10 +206,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 return listCarts();
             }
         }
@@ -227,10 +227,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 return getItems(productId);
             }
         }
@@ -249,10 +249,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 return buyCart(cartId, creditCardNr);
             }
         }
@@ -271,10 +271,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 addToCart(cartId, itemId, itemQty);
             }
         }
@@ -291,10 +291,10 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 return shopHistory();
             }
         }
@@ -312,19 +312,19 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
                 imAlive();
             }
         }		
 	}
 
 	@Override
-	public void updateShopHistory(ShoppingResultView shoppingResultView) {
+	public void updateShopHistory(ShoppingResultView shoppingResultView, String pid) {
 		try {
-			port.updateShopHistory(shoppingResultView);
+			port.updateShopHistory(shoppingResultView, pid);
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
@@ -332,19 +332,19 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                updateShopHistory(shoppingResultView);
+                updateShopHistory(shoppingResultView, pid);
             }
         }
 	}
 
 	@Override
-	public void updateCart(CartView cartView) {
+	public void updateCart(CartView cartView, String pid) {
 		try {
-			port.updateCart(cartView);
+			port.updateCart(cartView, pid);
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
@@ -352,12 +352,32 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                updateCart(cartView);;
+                updateCart(cartView, pid);
             }
         }		
+	}
+
+	@Override
+	public void updateClear() {
+		try {
+			port.updateClear();
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+	                createStub();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                updateClear();
+            }
+        }	
 	}
 }
