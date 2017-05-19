@@ -5,14 +5,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.komparator.mediator.ws.cli.MediatorClient;
 import org.komparator.mediator.ws.cli.MediatorClientException;
+import org.komparator.mediator.ws.handler.DuplicateServerHandler;
 import org.komparator.supplier.ws.BadProductId_Exception;
 import org.komparator.supplier.ws.BadQuantity_Exception;
 import org.komparator.supplier.ws.InsufficientQuantity_Exception;
@@ -34,13 +43,13 @@ public class MediatorPortImpl implements MediatorPortType {
 	private MediatorEndpointManager endpointManager;
 	MediatorClient mediatorClient;
 	private Date lastDate;
+	private Map<String, ShoppingResultView> buyCartRequests = new HashMap<String, ShoppingResultView>();
+	private Set<String> addToCartRequests = new HashSet<String>();
+	
 	
 	public MediatorPortImpl(MediatorEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
 	}
-
-	public String clientId = endpointManager.getWsURL();
-	public int requestId = 0;
 	
 	private List<CartView> carts = new ArrayList<CartView>();
 	private List<ShoppingResultView> shoppingresults = new ArrayList<ShoppingResultView>();
@@ -120,10 +129,25 @@ public class MediatorPortImpl implements MediatorPortType {
 
 		return foundItems;
 	}
+	
+	@Resource
+	private WebServiceContext webServiceContext;
 
 	@Override
 	public void addToCart(String cartId, ItemIdView itemId, int itemQty) throws InvalidCartId_Exception,
 			InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+		
+		// retrieve message context
+		MessageContext messageContext = webServiceContext.getMessageContext();
+		String propertyValue = (String) messageContext.get(DuplicateServerHandler.REQUEST_PROPERTY);
+		
+		System.out.println("\n\n\n\n\n\nMENSAGEM RECEBIDA:    " + propertyValue + "\n\n\n\n\n\n\n");
+		
+		if(!addToCartRequests.add(propertyValue)) {
+			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
+			return;
+		}
+		
 		if (cartId == null) {
 			throwInvalidCartId("CartId: incorrect argument");
 		}
@@ -211,6 +235,7 @@ public class MediatorPortImpl implements MediatorPortType {
 						e.printStackTrace();
 					}
 					mediatorClient.updateCart(cart);
+					
 					return;
 				}
 			}
@@ -220,6 +245,17 @@ public class MediatorPortImpl implements MediatorPortType {
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
 			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
+		// retrieve message context
+		MessageContext messageContext = webServiceContext.getMessageContext();
+		String propertyValue = (String) messageContext.get(DuplicateServerHandler.REQUEST_PROPERTY);
+
+		System.out.println("\n\n\n\n\n\nMENSAGEM RECEBIDA:    " + propertyValue + "\n\n\n\n\n\n\n");
+		
+		if(buyCartRequests.containsKey(propertyValue)) {
+			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
+			return buyCartRequests.get(propertyValue);
+		}
+		
 		if (cartId == null) {
 			throwInvalidCartId("CartId: incorrect argument");
 		}
@@ -299,8 +335,10 @@ public class MediatorPortImpl implements MediatorPortType {
 				e.printStackTrace();
 			}
 			
+
 			mediatorClient.updateShopHistory(shoppingresult);
 			
+			buyCartRequests.put(propertyValue, shoppingresult);
 			return shoppingresult;
 		}
 	}
@@ -354,6 +392,8 @@ public class MediatorPortImpl implements MediatorPortType {
 		carts.clear();
 		shoppingresults.clear();
 		shoppingresultIdCounter.set(0);
+		addToCartRequests.clear();
+		buyCartRequests.clear();
 		/*List<SupplierClient> suppliers = getAllSuppliers();
 		if(!suppliers.isEmpty()){
 			for(SupplierClient supplier : suppliers) {

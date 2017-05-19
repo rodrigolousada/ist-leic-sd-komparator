@@ -2,12 +2,14 @@ package org.komparator.mediator.ws.cli;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
 
 import org.komparator.mediator.ws.*;
+import org.komparator.mediator.ws.handler.DuplicateClientHandler;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
@@ -101,7 +103,7 @@ public class MediatorClient implements MediatorPortType {
             BindingProvider bindingProvider = (BindingProvider) port;
             Map<String, Object> requestContext = bindingProvider
                     .getRequestContext();
-            requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
+    		requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
         }
     }
 
@@ -134,7 +136,7 @@ public class MediatorClient implements MediatorPortType {
 
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
-			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
+			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {		
 		return port.buyCart(cartId, creditCardNr);
 	}
 
@@ -162,6 +164,7 @@ public class MediatorClient implements MediatorPortType {
 	@Override
 	public void updateCart(CartView cartView) {
 		port.updateCart(cartView);
+		
 	}
  
 }
