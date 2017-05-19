@@ -72,6 +72,8 @@ wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
 			<xs:element name="updateShopHistory" type="tns:updateShopHistory"/>
 			
 			<xs:element name="updateCart" type="tns:updateCart"/>
+			
+			<xs:element name="updateClear" type="tns:updateClear"/>
 
             <xs:complexType name="listCarts">
                 <xs:sequence/>
@@ -250,13 +252,19 @@ wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
             <xs:complexType name="updateShopHistory">
             	<xs:sequence>
                 	<xs:element name="shopHistory" type="tns:shoppingResultView" minOccurs="0"/>
+                	<xs:element name="pid" type="xs:string" minOccurs="0"/>
             	</xs:sequence>
             </xs:complexType>
             
             <xs:complexType name="updateCart">
             	<xs:sequence>
             		<xs:element name="cartView" type="tns:cartView" minOccurs="0"/>
+            		<xs:element name="pid" type="xs:string" minOccurs="0"/>
             	</xs:sequence>
+            </xs:complexType>
+            
+            <xs:complexType name="updateClear">
+                <xs:sequence/>
             </xs:complexType>
 
             <xs:simpleType name="result">
@@ -348,6 +356,9 @@ wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
     <message name="updateCart">
         <part name="parameters" element="tns:updateCart"/>
     </message>
+    <message name="updateClear">
+        <part name="parameters" element="tns:updateClear"/>
+    </message>
 
     <!-- Port Type (Interface) -->
     <portType name="MediatorPortType">
@@ -400,6 +411,9 @@ wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
         </operation>
         <operation name="updateCart">
             <input wsam:Action="http://ws.mediator.komparator.org/Mediator/updateCartRequest" message="tns:updateCart"/>
+        </operation>
+        <operation name="updateClear">
+            <input wsam:Action="http://ws.mediator.komparator.org/Mediator/updateClearRequest" message="tns:updateClear"/>
         </operation>
     </portType>
 
@@ -518,6 +532,12 @@ wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
             </input>
         </operation>
         <operation name="updateCart">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+        </operation>
+        <operation name="updateClear">
             <soap:operation soapAction=""/>
             <input>
                 <soap:body use="literal"/>

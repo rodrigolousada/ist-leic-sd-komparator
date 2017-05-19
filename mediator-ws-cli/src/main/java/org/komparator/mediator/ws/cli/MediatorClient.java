@@ -109,7 +109,7 @@ public class MediatorClient implements MediatorPortType {
             Map<String, Object> requestContext = bindingProvider
                     .getRequestContext();
     		requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
-    		int connectionTimeout = 1000; //connection timeout value e adjustable by changing this variable
+    		int connectionTimeout = 1000; //connection timeout value is adjustable by changing this variable
 
             final List<String> CONN_TIME_PROPS = new ArrayList<String>();
             CONN_TIME_PROPS.add("com.sun.xml.ws.connect.timeout");
@@ -119,7 +119,7 @@ public class MediatorClient implements MediatorPortType {
             for (String propName : CONN_TIME_PROPS)
                 requestContext.put(propName, connectionTimeout);
 
-            int receiveTimeout = 2000; //response timeout value e adjustable by changing this variable
+            int receiveTimeout = 2000; //response timeout value is adjustable by changing this variable
 
             final List<String> RECV_TIME_PROPS = new ArrayList<String>();
             RECV_TIME_PROPS.add("com.sun.xml.ws.request.timeout");
@@ -144,11 +144,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                port.clear();
+                clear();
             }
         }
 	}
@@ -164,11 +164,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                return port.ping(arg0);
+                return ping(arg0);
             }
         }
     	return null;
@@ -185,11 +185,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                return port.searchItems(descText);
+                return searchItems(descText);
             }
         }
     	return null;
@@ -206,11 +206,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                return port.listCarts();
+                return listCarts();
             }
         }
     	return null;
@@ -227,11 +227,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                return port.getItems(productId);
+                return getItems(productId);
             }
         }
     	return null;
@@ -249,11 +249,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                return port.buyCart(cartId, creditCardNr);
+                return buyCart(cartId, creditCardNr);
             }
         }
     	return null;
@@ -271,11 +271,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                port.addToCart(cartId, itemId, itemQty);
+                addToCart(cartId, itemId, itemQty);
             }
         }
 	}
@@ -291,11 +291,11 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                return port.shopHistory();
+                return shopHistory();
             }
         }
     	return null;
@@ -312,19 +312,19 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                port.imAlive();
+                imAlive();
             }
         }		
 	}
 
 	@Override
-	public void updateShopHistory(ShoppingResultView shoppingResultView) {
+	public void updateShopHistory(ShoppingResultView shoppingResultView, String pid) {
 		try {
-			port.updateShopHistory(shoppingResultView);
+			port.updateShopHistory(shoppingResultView, pid);
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
@@ -332,19 +332,19 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                port.updateShopHistory(shoppingResultView);
+                updateShopHistory(shoppingResultView, pid);
             }
         }
 	}
 
 	@Override
-	public void updateCart(CartView cartView) {
+	public void updateCart(CartView cartView, String pid) {
 		try {
-			port.updateCart(cartView);
+			port.updateCart(cartView, pid);
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
@@ -352,12 +352,32 @@ public class MediatorClient implements MediatorPortType {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
+	                createStub();
 				} catch (MediatorClientException e) {
 					System.out.println("Error on uddiLookup");
 				}
-                createStub();
-                port.updateCart(cartView);;
+                updateCart(cartView, pid);
             }
         }		
+	}
+
+	@Override
+	public void updateClear() {
+		try {
+			port.updateClear();
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+	                createStub();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                updateClear();
+            }
+        }	
 	}
 }

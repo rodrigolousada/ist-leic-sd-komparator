@@ -203,7 +203,9 @@ public class MediatorPortImpl implements MediatorPortType {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				mediatorClient.updateCart(newcart);
+
+				String pid = "" + System.currentTimeMillis();
+				if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
 				
 				return;
 			}
@@ -219,7 +221,10 @@ public class MediatorPortImpl implements MediatorPortType {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					mediatorClient.updateCart(cart);
+
+
+					String pid = "" + System.currentTimeMillis();
+					if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
 					
 					return;
 				}
@@ -234,7 +239,9 @@ public class MediatorPortImpl implements MediatorPortType {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					mediatorClient.updateCart(cart);
+					
+					String pid = "" + System.currentTimeMillis();
+					if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
 					
 					return;
 				}
@@ -335,10 +342,19 @@ public class MediatorPortImpl implements MediatorPortType {
 				e.printStackTrace();
 			}
 			
-
-			mediatorClient.updateShopHistory(shoppingresult);
+			String pid = "" + System.currentTimeMillis();
+			if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateShopHistory(shoppingresult, pid);
 			
 			buyCartRequests.put(propertyValue, shoppingresult);
+			
+			
+			/*try {
+				System.out.println("\n\n\n\nYOU FELL ASLEEEEEEEEEEEP!!!!\n\n\n\n");
+				Thread.sleep(20000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}*/
 			return shoppingresult;
 		}
 	}
@@ -547,12 +563,21 @@ public class MediatorPortImpl implements MediatorPortType {
 	public Date getLastDate() { return lastDate; }
 
 	@Override
-	public void updateShopHistory(ShoppingResultView shoppingResultView) {
+	public void updateShopHistory(ShoppingResultView shoppingResultView, String pid) {
+		if(buyCartRequests.containsKey(pid)) {
+			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
+			return;
+		}
+		buyCartRequests.put(pid, new ShoppingResultView());
 		shoppingresults.add(0, shoppingResultView);
 	}
 
 	@Override
-	public void updateCart(CartView cartView) {
+	public void updateCart(CartView cartView, String pid) {
+		if(!addToCartRequests.add(pid)) {
+			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
+			return;
+		}
 		CartView cart = findCart(carts, cartView.getCartId());
 		if(cart==null) {
 			carts.add(cartView);
@@ -563,6 +588,11 @@ public class MediatorPortImpl implements MediatorPortType {
 					carts.set(i, cartView);
 			}
 		}
+	}
+
+	@Override
+	public void updateClear() {
+		clear();
 	}
 
 }
