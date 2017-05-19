@@ -2,11 +2,14 @@ package org.komparator.mediator.ws.cli;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 
 import org.komparator.mediator.ws.*;
 import org.komparator.mediator.ws.handler.DuplicateClientHandler;
@@ -104,67 +107,255 @@ public class MediatorClient implements MediatorPortType {
             Map<String, Object> requestContext = bindingProvider
                     .getRequestContext();
     		requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
+    		int connectionTimeout = 1000; //connection timeout value e adjustable by changing this variable
+
+            final List<String> CONN_TIME_PROPS = new ArrayList<String>();
+            CONN_TIME_PROPS.add("com.sun.xml.ws.connect.timeout");
+            CONN_TIME_PROPS.add("com.sun.xml.internal.ws.connect.timeout");
+            CONN_TIME_PROPS.add("javax.xml.ws.client.connectionTimeout");
+
+            for (String propName : CONN_TIME_PROPS)
+                requestContext.put(propName, connectionTimeout);
+
+            int receiveTimeout = 2000; //response timeout value e adjustable by changing this variable
+
+            final List<String> RECV_TIME_PROPS = new ArrayList<String>();
+            RECV_TIME_PROPS.add("com.sun.xml.ws.request.timeout");
+            RECV_TIME_PROPS.add("com.sun.xml.internal.ws.request.timeout");
+            RECV_TIME_PROPS.add("javax.xml.ws.client.receiveTimeout");
+
+            for (String propName : RECV_TIME_PROPS)
+                requestContext.put(propName, receiveTimeout);
         }
     }
 
     // remote invocation methods ----------------------------------------------
     
     @Override
-	public void clear() {
-		port.clear();
+	public void clear(){
+		try {
+			port.clear();
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                port.clear();
+            }
+        }
 	}
 
     @Override
-	public String ping(String arg0) {
-		return port.ping(arg0);
+	public String ping(String arg0){
+    	try {
+    		return port.ping(arg0);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                return port.ping(arg0);
+            }
+        }
+    	return null;
 	}
 
     @Override
 	public List<ItemView> searchItems(String descText) throws InvalidText_Exception {
-		return port.searchItems(descText);
+    	try {
+    		return port.searchItems(descText);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                return port.searchItems(descText);
+            }
+        }
+    	return null;
 	}
 
     @Override
 	public List<CartView> listCarts() {
-		return port.listCarts();
+    	try {
+    		return port.listCarts();
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                return port.listCarts();
+            }
+        }
+    	return null;
 	}
 
 	@Override
 	public List<ItemView> getItems(String productId) throws InvalidItemId_Exception {
-		return port.getItems(productId);
+		try {
+			return port.getItems(productId);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                return port.getItems(productId);
+            }
+        }
+    	return null;
 	}
 
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
-			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {		
-		return port.buyCart(cartId, creditCardNr);
+			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {	
+		try {
+			return port.buyCart(cartId, creditCardNr);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                return port.buyCart(cartId, creditCardNr);
+            }
+        }
+    	return null;
 	}
 
 	@Override
 	public void addToCart(String cartId, ItemIdView itemId, int itemQty) throws InvalidCartId_Exception,
 			InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
-		port.addToCart(cartId, itemId, itemQty);
+		try {
+			port.addToCart(cartId, itemId, itemQty);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                port.addToCart(cartId, itemId, itemQty);
+            }
+        }
 	}
 
 	@Override
 	public List<ShoppingResultView> shopHistory() {
-		return port.shopHistory();
+		try {
+			return port.shopHistory();
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                return port.shopHistory();
+            }
+        }
+    	return null;
 	}
 
 	@Override
 	public void imAlive() {
-		port.imAlive();
+		try {
+			port.imAlive();
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                port.imAlive();
+            }
+        }		
 	}
 
 	@Override
 	public void updateShopHistory(ShoppingResultView shoppingResultView) {
-		port.updateShopHistory(shoppingResultView);
+		try {
+			port.updateShopHistory(shoppingResultView);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                port.updateShopHistory(shoppingResultView);
+            }
+        }
 	}
 
 	@Override
 	public void updateCart(CartView cartView) {
-		port.updateCart(cartView);
-		
+		try {
+			port.updateCart(cartView);
+        } catch(WebServiceException wse) {
+            System.out.println("Caught: " + wse);
+            Throwable cause = wse.getCause();
+            if (cause != null && cause instanceof SocketTimeoutException) {
+                System.out.println("The cause was a timeout exception: " + cause);
+                try {
+					uddiLookup();
+				} catch (MediatorClientException e) {
+					System.out.println("Error on uddiLookup");
+				}
+                createStub();
+                port.updateCart(cartView);;
+            }
+        }		
 	}
- 
 }
