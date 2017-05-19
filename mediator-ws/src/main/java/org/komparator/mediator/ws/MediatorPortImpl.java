@@ -241,7 +241,7 @@ public class MediatorPortImpl implements MediatorPortType {
 					}
 					
 					String pid = "" + System.currentTimeMillis();
-					if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
+					if(endpointManager.getWsURL() == "http://localhost:8071/mediator-ws/endpoint") mediatorClient.updateCart(cart, pid);
 					
 					return;
 				}
@@ -343,14 +343,14 @@ public class MediatorPortImpl implements MediatorPortType {
 			}
 			
 			String pid = "" + System.currentTimeMillis();
-			if(endpointManager.getWsURL() == "http://localhost:8072/mediator-ws/endpoint") mediatorClient.updateShopHistory(shoppingresult, pid);
+			if(endpointManager.getWsURL() == "http://localhost:8071/mediator-ws/endpoint") mediatorClient.updateShopHistory(shoppingresult, pid);
 			
 			buyCartRequests.put(propertyValue, shoppingresult);
 			
-			
+			//Uncomment for timeouts test
 			/*try {
 				System.out.println("\n\n\n\nYOU FELL ASLEEEEEEEEEEEP!!!!\n\n\n\n");
-				Thread.sleep(20000);
+				Thread.sleep(2001);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -568,6 +568,8 @@ public class MediatorPortImpl implements MediatorPortType {
 			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
 			return;
 		}
+
+		System.out.println("\n\n\n\n\n\nUPDATING SHOP HISTORY\n\n\n\n\n\n");
 		buyCartRequests.put(pid, new ShoppingResultView());
 		shoppingresults.add(0, shoppingResultView);
 	}
@@ -578,6 +580,7 @@ public class MediatorPortImpl implements MediatorPortType {
 			System.out.println("\n\n\n\n\n\nMENSAGEM REJEITADA\n\n\n\n\n\n");
 			return;
 		}
+		System.out.println("\n\n\n\n\n\nUPDATING CART\n\n\n\n\n\n");
 		CartView cart = findCart(carts, cartView.getCartId());
 		if(cart==null) {
 			carts.add(cartView);

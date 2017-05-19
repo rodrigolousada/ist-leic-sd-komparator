@@ -44,6 +44,8 @@ public class MediatorClient implements MediatorPortType {
     public String getWsURL() {
         return wsURL;
     }
+    
+    private long serialNumber = 0;
 
     /** output option **/
     private boolean verbose = false;
@@ -70,6 +72,14 @@ public class MediatorClient implements MediatorPortType {
         createStub();
     }
 
+    public void sendPropertyValue() {
+    	// access request context
+    	BindingProvider bindingProvider = (BindingProvider) port;
+    	Map<String, Object> requestContext = bindingProvider.getRequestContext();
+    	String propertyValue = "" + serialNumber;
+    	requestContext.put(DuplicateClientHandler.REQUEST_PROPERTY, propertyValue);	
+    }
+    
     /** UDDI lookup */
     private void uddiLookup() throws MediatorClientException {
         try {
@@ -155,6 +165,7 @@ public class MediatorClient implements MediatorPortType {
 
     @Override
 	public String ping(String arg0){
+    	sendPropertyValue();
     	try {
     		return port.ping(arg0);
         } catch(WebServiceException wse) {
@@ -176,6 +187,7 @@ public class MediatorClient implements MediatorPortType {
 
     @Override
 	public List<ItemView> searchItems(String descText) throws InvalidText_Exception {
+    	sendPropertyValue();
     	try {
     		return port.searchItems(descText);
         } catch(WebServiceException wse) {
@@ -197,6 +209,7 @@ public class MediatorClient implements MediatorPortType {
 
     @Override
 	public List<CartView> listCarts() {
+    	sendPropertyValue();
     	try {
     		return port.listCarts();
         } catch(WebServiceException wse) {
@@ -218,6 +231,7 @@ public class MediatorClient implements MediatorPortType {
 
 	@Override
 	public List<ItemView> getItems(String productId) throws InvalidItemId_Exception {
+		sendPropertyValue();
 		try {
 			return port.getItems(productId);
         } catch(WebServiceException wse) {
@@ -239,7 +253,8 @@ public class MediatorClient implements MediatorPortType {
 
 	@Override
 	public ShoppingResultView buyCart(String cartId, String creditCardNr)
-			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {	
+			throws EmptyCart_Exception, InvalidCartId_Exception, InvalidCreditCard_Exception {
+		sendPropertyValue();
 		try {
 			return port.buyCart(cartId, creditCardNr);
         } catch(WebServiceException wse) {
@@ -255,13 +270,16 @@ public class MediatorClient implements MediatorPortType {
 				}
                 return buyCart(cartId, creditCardNr);
             }
-        }
+        } finally {
+			serialNumber = System.currentTimeMillis();;
+		}
     	return null;
 	}
 
 	@Override
 	public void addToCart(String cartId, ItemIdView itemId, int itemQty) throws InvalidCartId_Exception,
 			InvalidItemId_Exception, InvalidQuantity_Exception, NotEnoughItems_Exception {
+		sendPropertyValue();		
 		try {
 			port.addToCart(cartId, itemId, itemQty);
         } catch(WebServiceException wse) {
@@ -278,10 +296,14 @@ public class MediatorClient implements MediatorPortType {
                 addToCart(cartId, itemId, itemQty);
             }
         }
+		finally {
+			serialNumber = System.currentTimeMillis();;
+		}
 	}
 
 	@Override
 	public List<ShoppingResultView> shopHistory() {
+		sendPropertyValue();
 		try {
 			return port.shopHistory();
         } catch(WebServiceException wse) {
@@ -343,6 +365,7 @@ public class MediatorClient implements MediatorPortType {
 
 	@Override
 	public void updateCart(CartView cartView, String pid) {
+		System.out.println("\n\n\n\n\n\nORDERING TO UPDATE SHOP HISTORY\n\n\n\n\n\n");
 		try {
 			port.updateCart(cartView, pid);
         } catch(WebServiceException wse) {
@@ -363,6 +386,7 @@ public class MediatorClient implements MediatorPortType {
 
 	@Override
 	public void updateClear() {
+		System.out.println("\n\n\n\n\n\nORDERING TO UPDATE CART\n\n\n\n\n\n");
 		try {
 			port.updateClear();
         } catch(WebServiceException wse) {

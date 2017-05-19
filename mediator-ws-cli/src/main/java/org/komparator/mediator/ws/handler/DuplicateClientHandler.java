@@ -34,6 +34,7 @@ public class DuplicateClientHandler implements SOAPHandler<SOAPMessageContext> {
 		Boolean outbound = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		if (outbound) {
 			// outbound message
+			String propertyValue = (String) smc.get(REQUEST_PROPERTY);
 			// put token in request SOAP header
 			try {
 				// get SOAP envelope
@@ -50,7 +51,7 @@ public class DuplicateClientHandler implements SOAPHandler<SOAPMessageContext> {
 				Name name = se.createName(REQUEST_HEADER, "e", REQUEST_NS);
 				SOAPHeaderElement element = sh.addHeaderElement(name);
 
-				element.addTextNode("" + System.currentTimeMillis());
+				element.addTextNode(propertyValue);
 
 			} catch (SOAPException e) {
 				System.out.printf("Failed to add SOAP header because of %s%n", e);
