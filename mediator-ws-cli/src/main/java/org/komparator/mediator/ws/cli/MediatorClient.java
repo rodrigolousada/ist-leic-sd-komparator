@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 
+import java.net.*;
+
 import org.komparator.mediator.ws.*;
 import org.komparator.mediator.ws.handler.DuplicateClientHandler;
 
@@ -138,7 +140,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -158,7 +160,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -179,7 +181,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -200,7 +202,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -221,7 +223,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -243,7 +245,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -265,7 +267,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -285,7 +287,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -306,7 +308,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -326,7 +328,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
@@ -346,7 +348,7 @@ public class MediatorClient implements MediatorPortType {
         } catch(WebServiceException wse) {
             System.out.println("Caught: " + wse);
             Throwable cause = wse.getCause();
-            if (cause != null && cause instanceof SocketTimeoutException) {
+            if (cause != null && (cause instanceof SocketTimeoutException || cause instanceof java.net.ConnectException)) {
                 System.out.println("The cause was a timeout exception: " + cause);
                 try {
 					uddiLookup();
